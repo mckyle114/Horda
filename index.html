@@ -360,6 +360,19 @@
   #topHud{position:absolute;left:14px;right:14px;top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
   .hudBox{background:rgba(9,12,24,.70);border:2px solid rgba(161,177,225,.35);padding:7px 10px;border-radius:5px}
   #timer{font-size:25px;min-width:98px;text-align:center}
+  #directorPanel{margin-top:5px;width:210px;padding:5px 7px 6px;background:rgba(8,11,22,.84);border:1px solid rgba(121,136,186,.42);border-radius:4px;box-shadow:0 2px 0 rgba(0,0,0,.45)}
+  .directorTop{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:9px;line-height:1;letter-spacing:.7px;font-weight:1000}
+  #directorLabel{color:#a8b2d2} #directorPct{color:#d9dff0}
+  .directorMeter{height:7px;margin-top:5px;background:#080b14;border:1px solid #242c46;overflow:hidden}
+  #directorFill{width:0%;height:100%;background:linear-gradient(90deg,#60708f,#a97fd8,#e4bf58);transition:width .18s linear}
+  #directorSignals{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:5px;font-size:7px;letter-spacing:.35px;text-align:center}
+  #directorSignals span{padding:2px 1px;color:#5f6986;border:1px solid rgba(90,104,146,.18);background:rgba(14,18,31,.60)}
+  #directorSignals span.on{color:#9ce5b1;border-color:rgba(92,194,123,.40);background:rgba(38,104,59,.22)}
+  #directorPanel.surge{border-color:#e5bd4d;box-shadow:0 0 13px rgba(229,189,77,.28),0 2px 0 rgba(0,0,0,.45)}
+  #directorPanel.surge #directorLabel,#directorPanel.surge #directorPct{color:#ffe486}
+  #directorPanel.surge #directorFill{background:linear-gradient(90deg,#d47b39,#f0c24f,#fff0a0);animation:surgePulse .5s ease-in-out infinite alternate}
+  @keyframes surgePulse{from{filter:brightness(.9)}to{filter:brightness(1.35)}}
+
   #scoreLine{text-align:right;font-size:14px;line-height:1.45}
   #bottomHud{position:absolute;left:14px;right:14px;bottom:12px}
   .bar{height:14px;background:#090b13;border:2px solid #000;position:relative;overflow:hidden}
@@ -367,6 +380,38 @@
   #hpFill{background:#e74f62}
   #xpFill{background:#59bde6}
   .labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+
+  #eventHud{
+    position:absolute;
+    top:13px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:6;
+    min-width:250px;
+    max-width:360px;
+    padding:7px 13px 8px;
+    text-align:center;
+    background:rgba(8,10,18,.91);
+    border:2px solid var(--eventColor,#d8b95b);
+    border-bottom-width:4px;
+    border-radius:5px;
+    box-shadow:0 0 16px color-mix(in srgb,var(--eventColor,#d8b95b) 22%,transparent),0 2px 0 #000;
+    pointer-events:none;
+  }
+  #eventHudName{
+    color:var(--eventColor,#ffe08a);
+    font-size:12px;
+    line-height:1.1;
+    font-weight:1000;
+    letter-spacing:1.2px;
+  }
+  #eventHudDetail{
+    color:#c8cee3;
+    font-size:9px;
+    line-height:1.35;
+    margin-top:3px;
+  }
+
   #weapons{
     position:absolute;
     left:14px;
@@ -449,7 +494,13 @@
       <div class="hudBox">
         <div id="timer">00:00</div>
         <div id="stage" style="font-size:12px;color:#c9d2f5;text-align:center">SUPERVIVE</div>
-        <div id="directorHud" style="display:none;font-size:9px;color:#9aa7c9;text-align:center;margin-top:2px"></div>
+        <div id="directorPanel">
+          <div class="directorTop"><span id="directorLabel">DIRECTOR DORMIDO</span><span id="directorPct">0%</span></div>
+          <div class="directorMeter"><div id="directorFill"></div></div>
+          <div id="directorSignals">
+            <span id="sigNoHit">SIN DAÑO</span><span id="sigHp">VIDA</span><span id="sigKills">BAJAS</span><span id="sigControl">CONTROL</span>
+          </div>
+        </div>
       </div>
       <div class="hudControls">
         <button id="pauseBtn" class="hudExitBtn">PAUSA</button>
@@ -459,6 +510,10 @@
         <div>Puntos: <span id="score">0</span></div>
         <div>Nivel: <span id="level">1</span> · Racha: <span id="streak">0</span></div>
       </div>
+    </div>
+    <div id="eventHud" class="hidden">
+      <div id="eventHudName">EVENTO</div>
+      <div id="eventHudDetail"></div>
     </div>
     <div id="weapons"></div>
     <div id="bottomHud">
@@ -1020,6 +1075,8 @@ function newGame(){
     level:1,xp:0,xpNeed:20,correctStreak:0,correct:0,questions:0,
     completion:false,boss8Alive:false,beatBoss4:false,beatBoss8:false,lastBossMinute:0,nextEndlessBoss:570,
     noHitTime:0,dominance:0,directorAcc:0,killTimes:[],surgeTime:0,surgeCooldown:0,
+    directorSignals:{noHit:false,healthy:false,clearingFast:false,screenControlled:false},
+    eventType:null,eventTime:0,eventSpawnAcc:0,eventSpawned:0,nextEventMinute:2,lastEventMinute:-10,dryEventMinutes:0,
     eliteCount:0,bossCount:0,gigaSpawned:false,
     progressSaveAcc:0,progressSavedScore:0,progressSavedCorrect:0,progressSavedQuestions:0,progressRunCounted:false,runTotalsCommitted:false,
     shake:0,flash:0,spawnAcc:0,eliteAcc:0,particles:[],texts:[],enemies:[],gems:[],projectiles:[],effects:[],
@@ -1040,6 +1097,7 @@ function newGame(){
         heroSpeed:hero.traitKey==="speed"?traitVal:0,
         weapons:{[hero.weapon]:{level:1,evolved:false,quality:RARITIES[tier.rarityIndex].mult}},
         passives:{},passiveQuality:{},
+        endless:{fury:0,tempo:0,guard:0,stride:0,reach:0,edge:0,swell:0},
         fireCd:0,chainCd:0,missileCd:0,axeCd:0,boomCd:0,poisonTick:0,
         orbitAngle:0
       };
@@ -1092,6 +1150,138 @@ function toggleSound(){
 function toggleFullscreen(){
   if(!document.fullscreenElement)$("wrap").requestFullscreen?.();
   else document.exitFullscreen?.();
+}
+
+
+const RANDOM_EVENTS={
+  bats:{
+    name:"PLAGA DE MURCIÉLAGOS",detail:"Solo murciélagos nuevos · muchos y rápidos · +20% EXP",
+    color:"#aa78e8",duration:14,minMinute:2,weight:18,
+    forceType:"bat",spawn:1.85,hp:.72,speed:1.12,dmg:.90,size:.90,xp:1.20,score:1.15
+  },
+  frenzy:{
+    name:"FRENESÍ",detail:"Enemigos frágiles pero muy rápidos · +20% puntos",
+    color:"#ef835d",duration:14,minMinute:3,weight:16,
+    spawn:1.65,hp:.68,speed:1.28,dmg:.92,size:.88,xp:1.12,score:1.20
+  },
+  colossi:{
+    name:"COLOSOS",detail:"Pocos enemigos gigantes y resistentes · +45% puntos y EXP",
+    color:"#d49a63",duration:15,minMinute:4,weight:13,
+    spawn:.58,hp:2.15,speed:.72,dmg:1.28,size:1.42,xp:1.45,score:1.45
+  },
+  arcane:{
+    name:"SOBRECARGA ARCANA",detail:"Más enemigos, ataques más rápidos · +35% EXP",
+    color:"#70c9ee",duration:15,minMinute:3,weight:14,
+    spawn:1.35,hp:1.0,speed:1.06,dmg:1.0,size:1.0,xp:1.35,score:1.12,playerHaste:.12
+  },
+  blood:{
+    name:"PACTO DE SANGRE",detail:"Golpean más fuerte · las bajas curan · +30% puntos",
+    color:"#ed6672",duration:14,minMinute:4,weight:11,
+    spawn:1.28,hp:1.08,speed:1.05,dmg:1.25,size:1.0,xp:1.18,score:1.30,healOnKill:.75
+  },
+  imps:{
+    name:"INVASIÓN DE DIABLILLOS",detail:"Solo diablillos nuevos · veloces · +20% puntos y EXP",
+    color:"#e66a58",duration:13,minMinute:5,weight:10,
+    forceType:"imp",spawn:1.48,hp:.86,speed:1.15,dmg:1.0,size:.95,xp:1.20,score:1.20
+  },
+  bones:{
+    name:"MARCHA DE HUESOS",detail:"Solo esqueletos nuevos · densos y resistentes · +25% EXP",
+    color:"#d7d1b9",duration:14,minMinute:3,weight:10,
+    forceType:"skeleton",spawn:1.35,hp:1.22,speed:.88,dmg:1.08,size:1.08,xp:1.25,score:1.18
+  },
+  mana:{
+    name:"FIEBRE DE EXP",detail:"Más enemigos · las gemas valen mucho más · +75% EXP",
+    color:"#62d5ef",duration:13,minMinute:2,weight:10,
+    spawn:1.24,hp:.92,speed:1.05,dmg:1.0,size:1.0,xp:1.75,score:1.08
+  },
+  elites:{
+    name:"CACERÍA ÉLITE",detail:"Solo aparecen élites · +45% puntos y EXP",
+    color:"#c47aff",duration:12,minMinute:4,weight:9,
+    mode:"elite",interval:2.15,maxAlive:7,hp:.82,speed:.96,dmg:.92,size:.94,xp:1.45,score:1.45
+  },
+  bosses:{
+    name:"CONSEJO DE JEFES",detail:"Solo jefes · sobrevive a la reunión · +50% puntos y EXP",
+    color:"#ffd15c",duration:14,minMinute:8,weight:7,
+    mode:"boss",interval:4.35,maxAlive:4,maxTotal:4,hp:.72,speed:.94,dmg:.90,size:.92,xp:1.50,score:1.50
+  }
+};
+
+function currentEvent(){
+  return G?.eventType&&G.eventTime>0 ? RANDOM_EVENTS[G.eventType] : null;
+}
+function eventModifiers(){
+  const e=currentEvent();
+  if(!e)return {spawn:1,hp:1,speed:1,dmg:1,size:1,xp:1,score:1,playerHaste:0,healOnKill:0,mode:null,forceType:null};
+  return {
+    spawn:e.spawn??1,hp:e.hp??1,speed:e.speed??1,dmg:e.dmg??1,size:e.size??1,
+    xp:e.xp??1,score:e.score??1,playerHaste:e.playerHaste??0,healOnKill:e.healOnKill??0,
+    mode:e.mode||null,forceType:e.forceType||null,interval:e.interval,maxAlive:e.maxAlive,maxTotal:e.maxTotal
+  };
+}
+function weightedEventChoice(list){
+  const total=list.reduce((s,x)=>s+x.weight,0);
+  let r=Math.random()*total;
+  for(const e of list){if((r-=e.weight)<=0)return e}
+  return list[list.length-1];
+}
+function clearArenaForSpecialEvent(){
+  // Give the player a clean transition into "pure elite/boss" events without free XP/score.
+  for(const e of G.enemies){
+    if(!e.dead && e.type!=="giga")particle(e.x,e.y,"#7f89a8",2);
+  }
+  G.enemies=G.enemies.filter(e=>e.type==="giga"&&!e.dead);
+}
+function startRandomEvent(key,minute){
+  const e=RANDOM_EVENTS[key];if(!e)return;
+  G.eventType=key;G.eventTime=e.duration;G.eventSpawnAcc=99;G.eventSpawned=0;
+  G.lastEventMinute=minute;G.dryEventMinutes=0;
+
+  // Do not stack an event with an endless boss immediately afterward.
+  if(G.time>=480)G.nextEndlessBoss=Math.max(G.nextEndlessBoss,G.time+e.duration+24);
+
+  if(e.mode==="elite"||e.mode==="boss")clearArenaForSpecialEvent();
+
+  if(e.mode==="boss"){sfx("boss");G.shake=13}
+  else {sfx("level");G.shake=5}
+  showToast("✦ "+e.name+" ✦",e.color,1900);
+}
+function tryRandomEvent(minute){
+  if(minute<2||G.eventTime>0||G.surgeTime>0)return;
+
+  // Preserve the designed 2/4/6/8-minute boss fights and never start over an existing boss.
+  if(minute<=8 && minute%2===0)return;
+  if(G.enemies.some(e=>!e.dead&&(e.type==="boss"||e.type==="giga")))return;
+
+  let chance=minute<4?.14:minute<8?.18:.23;
+  // A mild pity increase after a long dry spell, still capped as a small chance.
+  chance=Math.min(.30,chance+Math.max(0,G.dryEventMinutes-3)*.025);
+  if(Math.random()>chance){G.dryEventMinutes++;return}
+
+  const eligible=Object.entries(RANDOM_EVENTS)
+    .filter(([k,e])=>minute>=e.minMinute && !(k==="bosses"&&minute<8))
+    .map(([key,e])=>({key,...e}));
+  if(!eligible.length)return;
+
+  const chosen=weightedEventChoice(eligible);
+  startRandomEvent(chosen.key,minute);
+}
+function updateRandomEvents(dt){
+  if(!G)return;
+
+  if(G.eventTime>0){
+    G.eventTime=Math.max(0,G.eventTime-dt);
+    if(G.eventTime===0){
+      const ended=RANDOM_EVENTS[G.eventType];
+      G.eventType=null;G.eventSpawnAcc=0;G.eventSpawned=0;
+      if(ended)showToast(ended.name+" · COMPLETADO","#9fe8b3",1100);
+    }
+  }
+
+  const minute=Math.floor(G.time/60);
+  while(G.nextEventMinute<=minute){
+    tryRandomEvent(G.nextEventMinute);
+    G.nextEventMinute++;
+  }
 }
 
 function directorPhase(){
@@ -1158,6 +1348,7 @@ function updateDirector(dt){
   // No adaptive pressure at all before 2:00.
   if(G.time<120){
     G.dominance=Math.max(0,G.dominance-8);
+    G.directorSignals={noHit:false,healthy:false,clearingFast:false,screenControlled:false};
     return;
   }
 
@@ -1175,6 +1366,7 @@ function updateDirector(dt){
   const healthy=hpRatio>=.80;
   const clearingFast=kps>=kpsTarget;
   const screenControlled=enemyCount<=screenTarget;
+  G.directorSignals={noHit,healthy,clearingFast,screenControlled};
 
   // No-hit is a gate, but it is not enough by itself. The player must also be dominating combat.
   const otherSignals=(healthy?1:0)+(clearingFast?1:0)+(screenControlled?1:0);
@@ -1187,7 +1379,7 @@ function updateDirector(dt){
   }
 
   // A temporary rewarded challenge for truly dominant play.
-  if(G.dominance>=85 && G.surgeTime<=0 && G.surgeCooldown<=0){
+  if(G.dominance>=85 && G.surgeTime<=0 && G.surgeCooldown<=0 && G.eventTime<=0){
     G.surgeTime=16;
     G.surgeCooldown=70;
     showToast("⚔ ¡OLEADA FEROZ! · +25% PUNTOS ⚔","#ffd86a",1800);
@@ -1202,13 +1394,13 @@ function difficulty(){
   return base;
 }
 function spawnEnemy(type=null,forcedBoss=false){
-  const d=difficulty(),dir=directorModifiers();
+  const d=difficulty(),dir=directorModifiers(),ev=eventModifiers();
   let side=(Math.random()*4)|0,x,y,margin=35;
   if(side===0){x=rand(-margin,W+margin);y=-margin}
   if(side===1){x=W+margin;y=rand(-margin,H+margin)}
   if(side===2){x=rand(-margin,W+margin);y=H+margin}
   if(side===3){x=-margin;y=rand(-margin,H+margin)}
-  let t=type||pick(G.time<120?["bat","slime"]:G.time<300?["bat","slime","skeleton"]:["bat","slime","skeleton","imp"]);
+  let t=type||(ev.forceType||pick(G.time<120?["bat","slime"]:G.time<300?["bat","slime","skeleton"]:["bat","slime","skeleton","imp"]));
   const defs={
     bat:{hp:18,speed:54,r:8,dmg:8,xp:3,score:12},
     slime:{hp:34,speed:34,r:11,dmg:10,xp:4,score:14},
@@ -1234,9 +1426,10 @@ function spawnEnemy(type=null,forcedBoss=false){
     z.hp*=Math.max(1,d*.40);z.speed+=Math.min(31,d*1.9);
   }
   // Director stat boosts are deliberately modest. Density does most of the adaptive work.
-  z.hp*=dir.hp;
-  z.speed*=dir.speed;
-  z.dmg*=dir.dmg;
+  z.hp*=dir.hp*ev.hp;
+  z.speed*=dir.speed*ev.speed;
+  z.dmg*=dir.dmg*ev.dmg;
+  z.r*=ev.size;
   G.enemies.push({x,y,type:t,hp:z.hp,maxHp:z.hp,speed:z.speed,r:z.r,dmg:z.dmg,xp:z.xp,score:z.score,
                   hurt:0,hitCd:0,dead:false,boss:forcedBoss||t==="boss"||t==="giga"});
 }
@@ -1273,8 +1466,13 @@ function damageEnemy(e,amount,crit=false){
 function killEnemy(e){
   if(e.dead)return;e.dead=true;G.kills++;
   G.killTimes.push(G.time);
-  const dir=directorModifiers();
-  G.score+=e.score*dir.score;addGem(e.x,e.y,e.xp*dir.xp);
+  const dir=directorModifiers(),ev=eventModifiers();
+  G.score+=e.score*dir.score*ev.score;
+  addGem(e.x,e.y,e.xp*dir.xp*ev.xp);
+  if(ev.healOnKill>0){
+    const heal=ev.healOnKill*(e.type==="boss"?6:e.type==="elite"?2.5:1);
+    G.player.hp=Math.min(G.player.maxHp,G.player.hp+heal);
+  }
   const isBigBoss=e.type==="boss"||e.type==="giga";
   particle(e.x,e.y,isBigBoss?"#ffcd5e":"#d77cff",isBigBoss?(e.type==="giga"?36:22):7);
   if(isBigBoss){
@@ -1304,10 +1502,11 @@ function weaponPower(id){
   const wq=Math.max(w.quality||1,w.evoPower||1);
   const weaponQuality=1+(wq-1)*.55;
   const pq=G.player.passiveQuality||{};
-  const might=weaponQuality*(1+(G.player.passives.might||0)*.12*(pq.might||1))*(G.player.heroMight||1);
-  const size=(1+(G.player.passives.size||0)*.12*(pq.size||1))*(1+(G.player.heroSize||0));
-  const haste=Math.max(.45,1-(G.player.passives.haste||0)*.08*(pq.haste||1)-(G.player.heroHaste||0));
-  const crit=Math.min(.50,.05+(G.player.passives.crit||0)*.07*(pq.crit||1)+(G.player.heroCrit||0));
+  const en=G.player.endless||{};
+  const might=weaponQuality*(1+(G.player.passives.might||0)*.12*(pq.might||1))*(G.player.heroMight||1)*(1+(en.fury||0)*.04);
+  const size=(1+(G.player.passives.size||0)*.12*(pq.size||1))*(1+(G.player.heroSize||0))*(1+(en.swell||0)*.03);
+  const haste=Math.max(.30,1-(G.player.passives.haste||0)*.08*(pq.haste||1)-(G.player.heroHaste||0)-(en.tempo||0)*.03-eventModifiers().playerHaste);
+  const crit=Math.min(.65,.05+(G.player.passives.crit||0)*.07*(pq.crit||1)+(G.player.heroCrit||0)+(en.edge||0)*.02);
   return {lvl,evo,might,size,haste,crit,weaponQuality};
 }
 function hitRoll(base,p){
@@ -1467,7 +1666,7 @@ function updateEnemies(dt){
   G.enemies=G.enemies.filter(e=>!e.dead);
 }
 function updateGems(dt){
-  const p=G.player,mag=88+(p.passives.magnet||0)*45*((p.passiveQuality||{}).magnet||1)+(p.heroMagnet||0);
+  const p=G.player,mag=88+(p.passives.magnet||0)*45*((p.passiveQuality||{}).magnet||1)+(p.heroMagnet||0)+(p.endless?.reach||0)*18;
   for(const g of G.gems){
     g.life+=dt;
     let d=Math.hypot(g.x-p.x,g.y-p.y);
@@ -1536,11 +1735,26 @@ function gainXP(v){
   }
 }
 function updateSpawns(dt){
-  const d=difficulty(),dir=directorModifiers();
+  const d=difficulty(),dir=directorModifiers(),ev=eventModifiers();
   G.spawnAcc+=dt;
 
-  // Quantity is the director's primary lever.
-  let interval=Math.max(.09,.66/d)/dir.spawn;
+  // Special pure-elite / pure-boss events replace the normal spawning system temporarily.
+  if(ev.mode==="elite"||ev.mode==="boss"){
+    G.eventSpawnAcc+=dt;
+    const activeSpecial=G.enemies.filter(e=>!e.dead&&(ev.mode==="elite"?e.type==="elite":e.type==="boss")).length;
+    const maxAlive=(ev.maxAlive||6)+Math.min(2,Math.floor(Math.max(0,G.time-600)/300));
+    const maxTotal=ev.maxTotal||999;
+    if(G.eventSpawnAcc>=ev.interval && activeSpecial<maxAlive && G.eventSpawned<maxTotal){
+      G.eventSpawnAcc=0;
+      if(ev.mode==="elite")spawnEnemy("elite");
+      else spawnEnemy("boss",true);
+      G.eventSpawned++;
+    }
+    return;
+  }
+
+  // Quantity is the director's primary lever, with event modifiers layered on top.
+  let interval=Math.max(.09,.66/d)/(dir.spawn*ev.spawn);
   while(G.spawnAcc>interval){G.spawnAcc-=interval;spawnEnemy()}
 
   G.eliteAcc+=dt;
@@ -1571,6 +1785,7 @@ function update(dt){
   const p=G.player;
   G.time+=dt;G.score+=dt*2;p.invuln=Math.max(0,p.invuln-dt);
   G.noHitTime+=dt;G.progressSaveAcc+=dt;
+  updateRandomEvents(dt);
   updateDirector(dt);
   if(G.progressSaveAcc>=5){G.progressSaveAcc=0;syncCharacterProgress(true,false)}
   let dx=0,dy=0;
@@ -1578,7 +1793,7 @@ function update(dt){
   if(keys["a"]||keys["arrowleft"])dx--;if(keys["d"]||keys["arrowright"])dx++;
   if(dx||dy){
     const l=Math.hypot(dx,dy);dx/=l;dy/=l;
-    const sp=p.speed*(1+(p.passives.speed||0)*.08*((p.passiveQuality||{}).speed||1)+(p.heroSpeed||0));
+    const sp=p.speed*(1+(p.passives.speed||0)*.08*((p.passiveQuality||{}).speed||1)+(p.heroSpeed||0)+(p.endless?.stride||0)*.03);
     p.x=clamp(p.x+dx*sp*dt,18,W-18);p.y=clamp(p.y+dy*sp*dt,18,H-105);
     if(Math.abs(dx)>Math.abs(dy))p.dir=dx>0?"right":"left";else p.dir=dy>0?"down":"up";
   }
@@ -1893,15 +2108,32 @@ function updateHUD(){
   $("hpText").textContent=Math.ceil(G.player.hp)+"/"+G.player.maxHp;
   $("hpFill").style.width=(100*G.player.hp/G.player.maxHp)+"%";
   $("xpText").textContent=Math.floor(G.xp)+"/"+G.xpNeed;$("xpFill").style.width=(100*G.xp/G.xpNeed)+"%";
-  const dh=$("directorHud");
-  if(dh){
-    const dir=directorModifiers();
+  const eh=$("eventHud"),event=currentEvent();
+  if(eh){
+    if(event){
+      eh.classList.remove("hidden");
+      eh.style.setProperty("--eventColor",event.color);
+      $("eventHudName").textContent=event.name+" · "+Math.ceil(G.eventTime)+"s";
+      $("eventHudDetail").textContent=event.detail;
+    }else{
+      eh.classList.add("hidden");
+    }
+  }
+  const dp=$("directorPanel");
+  if(dp){
+    const dir=directorModifiers(),sig=G.directorSignals||{};
+    const label=$("directorLabel"),pct=$("directorPct"),fill=$("directorFill");
+    const sleeping=G.time<120;
     if(G.surgeTime>0){
-      dh.style.display="block";dh.style.color="#ffd86a";dh.textContent="OLEADA FEROZ · "+Math.ceil(G.surgeTime)+"s";
-    }else if(dir.level>0){
-      const names=["","PRESIÓN I","PRESIÓN II","PRESIÓN III"];
-      dh.style.display="block";dh.style.color="#9aa7c9";dh.textContent=names[dir.level];
-    }else dh.style.display="none";
+      dp.classList.add("surge");label.textContent="⚔ OLEADA FEROZ";pct.textContent=Math.ceil(G.surgeTime)+"s";fill.style.width="100%";
+    }else{
+      dp.classList.remove("surge");
+      if(sleeping){label.textContent="DIRECTOR DORMIDO";pct.textContent=fmtTime(120-G.time)}
+      else{const names=["DOMINIO","DOMINIO I","DOMINIO II","DOMINIO III"];label.textContent=names[dir.level];pct.textContent=Math.round(G.dominance)+"%"}
+      fill.style.width=(sleeping?0:clamp(G.dominance,0,100))+"%";
+    }
+    const setSig=(id,on)=>{const el=$(id);if(el)el.classList.toggle("on",!!on)};
+    setSig("sigNoHit",sig.noHit);setSig("sigHp",sig.healthy);setSig("sigKills",sig.clearingFast);setSig("sigControl",sig.screenControlled);
   }
 }
 function showToast(text,color="#fff",ms=900){
@@ -1932,7 +2164,32 @@ function renderWeaponList(){
     arr.push(`<div class="slot" style="border-left-color:#b9a358" title="${d.name}: ${d.desc}">${d.icon} ${passiveShort[id]||d.name} ${lvl}/${d.max}</div>`);
   }
 
+  const en=G.player.endless||{};
+  const totalAsc=Object.values(en).reduce((a,b)=>a+b,0);
+  if(totalAsc>0)arr.push(`<div class="slot" style="border-left-color:#d38cff" title="Mejoras obtenidas después de completar la build">✦ Ascensión ${totalAsc}</div>`);
   $("weapons").innerHTML=arr.join("");
+}
+
+
+const ENDLESS_UPGRADES={
+  fury:{name:"Furia",icon:"✹",desc:"+4% daño para esta partida."},
+  tempo:{name:"Cadencia",icon:"⌁",desc:"+3% velocidad de ataque."},
+  guard:{name:"Fortaleza",icon:"♥",desc:"+8 vida máxima y cura 12."},
+  stride:{name:"Impulso",icon:"➤",desc:"+3% velocidad de movimiento."},
+  reach:{name:"Atracción",icon:"◎",desc:"+18 alcance de EXP."},
+  edge:{name:"Precisión",icon:"✧",desc:"+2% probabilidad crítica."},
+  swell:{name:"Expansión",icon:"⬡",desc:"+3% tamaño de proyectiles y áreas."}
+};
+function endlessUpgradePool(){
+  const e=G.player.endless||{},pool=[];
+  if((e.fury||0)<15)pool.push({kind:"endless",id:"fury",weight:5});
+  if((e.tempo||0)<12)pool.push({kind:"endless",id:"tempo",weight:5});
+  if((e.guard||0)<15)pool.push({kind:"endless",id:"guard",weight:4});
+  if((e.stride||0)<10)pool.push({kind:"endless",id:"stride",weight:4});
+  if((e.reach||0)<10)pool.push({kind:"endless",id:"reach",weight:3});
+  if((e.edge||0)<10)pool.push({kind:"endless",id:"edge",weight:4});
+  if((e.swell||0)<10)pool.push({kind:"endless",id:"swell",weight:3});
+  return pool;
 }
 
 function availableEvolution(id){
@@ -1955,6 +2212,7 @@ function buildUpgradePool(chest=false){
   for(const id of Object.keys(PASSIVE_DEFS)){
     const lvl=G.player.passives[id]||0;if(lvl<PASSIVE_DEFS[id].max)pool.push({kind:"passive",id,weight:4});
   }
+  if(pool.length===0)return endlessUpgradePool();
   return pool;
 }
 function weightedDistinct(pool,n=3){
@@ -1969,12 +2227,16 @@ function weightedDistinct(pool,n=3){
 function cardInfo(base,chest=false){
   let ri=rollRarity(chest);
   if(base.kind==="evolution")ri=Math.max(ri,3);
-  const rarity=RARITIES[ri],d=base.kind==="passive"?PASSIVE_DEFS[base.id]:WEAPON_DEFS[base.id];
+  const rarity=RARITIES[ri],d=base.kind==="passive"?PASSIVE_DEFS[base.id]:
+    base.kind==="endless"?ENDLESS_UPGRADES[base.id]:WEAPON_DEFS[base.id];
   let title,desc;
   if(base.kind==="evolution"){title=d.evo;desc=`EVOLUCIÓN: transforma ${d.name} en una versión mucho más poderosa.`}
   else if(base.kind==="weapon"){
     const owned=G.player.weapons[base.id];
     title=d.name;desc=owned?`Mejora el arma de Nv.${owned.level} a Nv.${Math.min(5,owned.level+1)}.`:`Desbloquea esta nueva arma. ${d.desc}`;
+  }else if(base.kind==="endless"){
+    const lvl=(G.player.endless?.[base.id]||0)+1;
+    title=d.name;desc=`ASCENSIÓN ${lvl}: ${d.desc}`;
   }else{
     const lvl=G.player.passives[base.id]||0;title=d.name;desc=`${d.desc} Nivel ${lvl+1}/${d.max}.`;
   }
@@ -1987,8 +2249,9 @@ function openReward(chest=false){
   if(!pool.length){G.modal=false;return}
   const cards=weightedDistinct(pool,3).map(x=>cardInfo(x,chest));
   G.pendingReward=cards;
-  $("upgradeTitle").textContent=chest?"COFRE DEL JEFE":"ELIGE UNA MEJORA";
-  $("upgradeSub").textContent=chest?"El cofre tiene mejores probabilidades de recompensas raras.":"Primero elige lo que quieres. Después tendrás que ganarte su versión potenciada.";
+  const isAscension=cards.length>0&&cards.every(c=>c.kind==="endless");
+  $("upgradeTitle").textContent=chest?"COFRE DEL JEFE":isAscension?"ASCENSIÓN":"ELIGE UNA MEJORA";
+  $("upgradeSub").textContent=chest?"El cofre tiene mejores probabilidades de recompensas raras.":isAscension?"Tu build está completa. Sigue aumentando tu poder.":"Primero elige lo que quieres. Después tendrás que ganarte su versión potenciada.";
   $("cards").innerHTML="";
   cards.forEach((c,i)=>{
     const b=document.createElement("button");b.className=`card r-${c.rarity.id}`;
@@ -2054,6 +2317,21 @@ function finishReward(correct,jackpot){
 }
 function applyUpgrade(c){
   const power=c.rarity.mult;
+  if(c.kind==="endless"){
+    G.player.endless ||= {fury:0,tempo:0,guard:0,stride:0,reach:0,edge:0,swell:0};
+    const steps=1+(c.bonusLevel?1:0);
+    G.player.endless[c.id]=(G.player.endless[c.id]||0)+steps;
+    const mult=c.rarity.mult;
+    if(c.id==="guard"){
+      const hpGain=Math.round(8*mult*steps);
+      G.player.maxHp+=hpGain;
+      G.player.hp=Math.min(G.player.maxHp,G.player.hp+Math.round(12*mult*steps));
+    }
+    if(c.rarityIndex>=3){G.shake=5;showToast("ASCENSIÓN "+c.rarity.name.toUpperCase(),"#e5b0ff",850)}
+    renderWeaponList();
+    return;
+  }
+
   if(c.kind==="evolution"){
     const w=G.player.weapons[c.id];w.evolved=true;
     // Evolution also gives one effective weapon level burst through bonus scalar.
