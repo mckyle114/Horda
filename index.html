@@ -367,8 +367,12 @@
   #hpFill{background:#e74f62}
   #xpFill{background:#59bde6}
   .labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
-  #weapons{position:absolute;left:14px;top:82px;display:grid;gap:4px;font-size:12px;max-width:240px}
-  .slot{background:rgba(9,12,24,.72);border-left:4px solid #515e92;padding:4px 7px}
+  #weapons{position:absolute;left:50%;bottom:42px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:4px;font-size:10px;max-width:calc(100% - 190px);white-space:nowrap;overflow:hidden;height:25px}
+  #weapons .slot{background:rgba(9,12,24,.78);border-left:3px solid #515e92;padding:3px 6px;border-radius:3px;box-shadow:0 1px 0 #000}
+  .hudControls{display:flex;gap:6px;align-items:flex-start;pointer-events:auto}
+  .hudExitBtn{pointer-events:auto;align-self:flex-start;background:rgba(41,48,79,.88);font-size:10px;letter-spacing:.5px;padding:6px 9px;border:1px solid #66739d;border-bottom:3px solid #13182b;opacity:.92}
+  .hudExitBtn:hover{opacity:1}
+  .slot{background:rgba(9,12,24,.72);border-left:3px solid #515e92;padding:3px 6px}
   #toast{position:absolute;left:50%;top:18%;transform:translateX(-50%);z-index:10;font-size:30px;font-weight:1000;text-align:center;text-shadow:3px 3px 0 #000;pointer-events:none;opacity:0}
   .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .card{min-height:205px;text-align:left;background:#222944;border:3px solid #47537c;padding:16px;border-radius:8px;position:relative}
@@ -410,6 +414,10 @@
       <div class="hudBox">
         <div id="timer">00:00</div>
         <div id="stage" style="font-size:12px;color:#c9d2f5;text-align:center">SUPERVIVE</div>
+      </div>
+      <div class="hudControls">
+        <button id="pauseBtn" class="hudExitBtn">PAUSA</button>
+        <button id="saveExitBtn" class="hudExitBtn">GUARDAR Y SALIR</button>
       </div>
       <div id="scoreLine" class="hudBox">
         <div>Puntos: <span id="score">0</span></div>
@@ -485,7 +493,7 @@
 
         <div class="masteryLine">
           <span>MAESTRÍA</span>
-          Jefe 8:00 + 25,000 puntos en una partida, o 100,000 puntos acumulados.
+          Jefe 8:00 + 12,000 puntos en una partida, o 40,000 puntos acumulados.
         </div>
       </div>
     </div>
@@ -921,19 +929,19 @@ function scaledTraitText(hero,tierIndex){
 function nextTierRequirement(id){
   const p=save.charProgress[id]||blankHeroProgress();
   if(p.tier>=4)return "Máximo nivel desbloqueado.";
-  if(p.tier===0)return `Sobrevive 3:00 con ${CHARACTERS[id].name}.`;
-  if(p.tier===1)return `Derrota al jefe de 4:00 y consigue 5 respuestas correctas acumuladas.`;
-  if(p.tier===2)return `Derrota al jefe de 8:00 y consigue 10 respuestas correctas acumuladas.`;
+  if(p.tier===0)return `Sobrevive 1:30 con ${CHARACTERS[id].name}.`;
+  if(p.tier===1)return `Derrota al jefe de 4:00 y consigue 3 respuestas correctas acumuladas.`;
+  if(p.tier===2)return `Derrota al jefe de 8:00 y consigue 6 respuestas correctas acumuladas.`;
   const acc=p.questions>0?Math.round(p.correct/p.questions*100):0;
-  return `Legendaria: jefe 8:00 + 40,000 puntos acumulados + 20 correctas + 75% precisión. Ahora: ${p.totalScore.toLocaleString()} pts · ${p.correct} correctas · ${acc}%.`;
+  return `Legendaria: jefe 8:00 + 18,000 puntos acumulados + 10 correctas + 70% precisión. Ahora: ${p.totalScore.toLocaleString()} pts · ${p.correct} correctas · ${acc}%.`;
 }
 function computeUnlockedTier(p){
   let tier=0;
-  if(p.bestTime>=180)tier=1;
-  if(p.boss4 && p.correct>=5)tier=2;
-  if(p.boss8 && p.correct>=10)tier=3;
-  const acc=p.questions>=20?p.correct/p.questions:0;
-  if(p.boss8 && p.totalScore>=40000 && p.correct>=20 && p.questions>=20 && acc>=.75)tier=4;
+  if(p.bestTime>=90)tier=1;
+  if(p.boss4 && p.correct>=3)tier=2;
+  if(p.boss8 && p.correct>=6)tier=3;
+  const acc=p.questions>=10?p.correct/p.questions:0;
+  if(p.boss8 && p.totalScore>=18000 && p.correct>=10 && p.questions>=10 && acc>=.70)tier=4;
   return tier;
 }
 function renderHeroChoices(){
@@ -974,7 +982,9 @@ function newGame(){
   G={
     running:true,paused:false,modal:false,time:0,last:performance.now(),score:0,kills:0,
     level:1,xp:0,xpNeed:20,correctStreak:0,correct:0,questions:0,
-    completion:false,boss8Alive:false,beatBoss4:false,beatBoss8:false,lastBossMinute:0,nextEndlessBoss:600,
+    completion:false,boss8Alive:false,beatBoss4:false,beatBoss8:false,lastBossMinute:0,nextEndlessBoss:570,
+    noHitTime:0,pressureWarned:false,eliteCount:0,bossCount:0,gigaSpawned:false,
+    progressSaveAcc:0,progressSavedScore:0,progressSavedCorrect:0,progressSavedQuestions:0,progressRunCounted:false,runTotalsCommitted:false,
     shake:0,flash:0,spawnAcc:0,eliteAcc:0,particles:[],texts:[],enemies:[],gems:[],projectiles:[],effects:[],
     pendingReward:null,pendingCard:null,rewardIsChest:false,
     player:(()=>{
@@ -1001,6 +1011,7 @@ function newGame(){
   Object.values(overlays).forEach(o=>o.classList.add("hidden"));
   hud.classList.remove("hidden");
   renderWeaponList();updateHUD();showToast("¡SOBREVIVE!", "#ffe78a",1200);
+  if($("pauseBtn"))$("pauseBtn").textContent="PAUSA";
   G.last=performance.now();
   startMusic();setMusicLevel(.105);
   requestAnimationFrame(loop);
@@ -1016,29 +1027,47 @@ window.addEventListener("keydown",e=>{
 });
 window.addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
 
-function togglePause(){
-  G.paused=!G.paused;overlays.pause.classList.toggle("hidden",!G.paused);
-  setMusicLevel(G.paused?.025:.105);
-  G.last=performance.now();
+async function togglePause(){
+  if(!G?.running||G.modal)return;
+  G.paused=!G.paused;
+  overlays.pause.classList.toggle("hidden",!G.paused);
+  const btn=$("pauseBtn");
+  if(btn)btn.textContent=G.paused?"REANUDAR":"PAUSA";
+
+  if(G.paused){
+    // Suspend the entire Web Audio context so music and sound effects freeze completely.
+    try{if(audioCtx&&audioCtx.state==="running")await audioCtx.suspend()}catch(e){}
+  }else{
+    try{if(soundOn&&audioCtx&&audioCtx.state==="suspended")await audioCtx.resume()}catch(e){}
+    setMusicLevel(.105);
+    G.last=performance.now();
+  }
 }
 function toggleSound(){
   soundOn=!soundOn;$("soundBtn").textContent="SONIDO: "+(soundOn?"SÍ":"NO");
-  if(soundOn){if(G?.running)startMusic();setMusicLevel(G?.modal?.05:.105)}
-  else setMusicLevel(0);
+  if(soundOn){
+    if(G?.running&&!G.paused)startMusic();
+    if(!G?.paused)setMusicLevel(G?.modal?.05:.105);
+  }else{
+    setMusicLevel(0);
+  }
 }
 function toggleFullscreen(){
   if(!document.fullscreenElement)$("wrap").requestFullscreen?.();
   else document.exitFullscreen?.();
 }
 
+function noHitDanger(){
+  if(!G||G.noHitTime<45)return 0;
+  return clamp((G.noHitTime-45)/35,0,1.6);
+}
 function difficulty(){
-  // Smoothly ramps through 8 min, then climbs faster in endless mode.
   let base=1+G.time/150;
   if(G.time>480)base+=(G.time-480)/75;
-  return base;
+  return base*(1+noHitDanger()*.30);
 }
 function spawnEnemy(type=null,forcedBoss=false){
-  const d=difficulty();
+  const d=difficulty(),pressure=noHitDanger();
   let side=(Math.random()*4)|0,x,y,margin=35;
   if(side===0){x=rand(-margin,W+margin);y=-margin}
   if(side===1){x=W+margin;y=rand(-margin,H+margin)}
@@ -1051,14 +1080,30 @@ function spawnEnemy(type=null,forcedBoss=false){
     skeleton:{hp:55,speed:42,r:10,dmg:12,xp:6,score:18},
     imp:{hp:72,speed:62,r:9,dmg:14,xp:7,score:22},
     elite:{hp:230,speed:40,r:16,dmg:18,xp:28,score:110},
-    boss:{hp:900,speed:31,r:27,dmg:25,xp:95,score:1800}
+    boss:{hp:900,speed:31,r:27,dmg:25,xp:95,score:1800},
+    giga:{hp:11000,speed:27,r:46,dmg:42,xp:450,score:12000}
   };
   let z={...defs[t]};
-  if(t==="boss"){z.hp*=Math.max(1,d*.70);z.speed+=Math.min(22,d*2)}
-  else if(t==="elite"){z.hp*=Math.max(1,d*.55);z.speed+=Math.min(20,d*1.5)}
-  else {z.hp*=Math.max(1,d*.38);z.speed+=Math.min(28,d*1.8)}
+  if(t==="giga"){
+    G.bossCount++;
+    z.hp*=Math.max(1,d*.85);
+  }else if(t==="boss"){
+    G.bossCount++;
+    z.hp*=Math.max(1,d*.72);z.speed+=Math.min(24,d*2.1);
+    z.r=Math.min(44,27+2.45*Math.sqrt(Math.max(0,G.bossCount-1)));
+  }else if(t==="elite"){
+    G.eliteCount++;
+    z.hp*=Math.max(1,d*.58);z.speed+=Math.min(23,d*1.65);
+    z.r=Math.min(26,16+1.65*Math.sqrt(Math.max(0,G.eliteCount-1)));
+  }else{
+    z.hp*=Math.max(1,d*.40);z.speed+=Math.min(31,d*1.9);
+  }
+  // If the player has avoided damage for too long, enemies become tougher as well as more numerous.
+  z.hp*=1+pressure*.34;
+  z.speed*=1+pressure*.10;
+  z.dmg*=1+pressure*.28;
   G.enemies.push({x,y,type:t,hp:z.hp,maxHp:z.hp,speed:z.speed,r:z.r,dmg:z.dmg,xp:z.xp,score:z.score,
-                  hurt:0,hitCd:0,dead:false,boss:forcedBoss||t==="boss"});
+                  hurt:0,hitCd:0,dead:false,boss:forcedBoss||t==="boss"||t==="giga"});
 }
 function spawnBoss(minute){
   spawnEnemy("boss",true);
@@ -1066,6 +1111,12 @@ function spawnBoss(minute){
   sfx("boss");G.shake=12;
   showToast(minute===8?"JEFE DE 8:00":"¡JEFE!", "#ff8091",1500);
   if(minute===8)G.boss8Alive=true;
+}
+function spawnGigaBoss(){
+  if(G.gigaSpawned)return;
+  G.gigaSpawned=true;spawnEnemy("giga",true);
+  const boss=G.enemies[G.enemies.length-1];if(boss)boss.bossMinute=100;
+  sfx("boss");G.shake=20;showToast("☠ GIGABOSS · NIVEL 100 ☠","#ffd45a",2600);
 }
 function spawnElite(){spawnEnemy("elite")}
 
@@ -1087,15 +1138,17 @@ function damageEnemy(e,amount,crit=false){
 function killEnemy(e){
   if(e.dead)return;e.dead=true;G.kills++;
   G.score+=e.score;addGem(e.x,e.y,e.xp);
-  particle(e.x,e.y,e.type==="boss"?"#ffcd5e":"#d77cff",e.type==="boss"?22:7);
-  if(e.type==="boss"){
+  const isBigBoss=e.type==="boss"||e.type==="giga";
+  particle(e.x,e.y,isBigBoss?"#ffcd5e":"#d77cff",isBigBoss?(e.type==="giga"?36:22):7);
+  if(isBigBoss){
     if(e.bossMinute===4)G.beatBoss4=true;
     if(e.bossMinute===8)G.beatBoss8=true;
-    G.shake=16;sfx("chest");
-    if(G.boss8Alive && G.time>=480){
+    syncCharacterProgress(true,false);
+    G.shake=e.type==="giga"?22:16;sfx("chest");
+    if(e.type==="boss" && e.bossMinute===8){
       G.boss8Alive=false;G.completion=true;save.boss8Beaten=true;writeSave();
       showToast("¡META DE 8:00 COMPLETADA!", "#ffe36f",2500);
-    } else showToast("¡COFRE DE JEFE!", "#ffe36f",1400);
+    } else showToast(e.type==="giga"?"¡GIGABOSS DERROTADO!":"¡COFRE DE JEFE!", "#ffe36f",e.type==="giga"?2300:1400);
     setTimeout(()=>{if(G?.running)openReward(true)},350);
   }
 }
@@ -1134,13 +1187,15 @@ function fireWeapons(dt){
     if(p.fireCd<=0){
       const t=nearestEnemy(p.x,p.y,520);
       if(t){
-        const count=wp.evo?Math.min(5,2+wp.lvl):1+Math.floor((wp.lvl-1)/3);
+        const count=wp.evo?Math.min(4,2+Math.floor(wp.lvl/2)):1+Math.floor((wp.lvl-1)/3);
+        const fireBase=19+Math.min(wp.lvl,4)*5+(wp.lvl>=5?1:0);
         for(let i=0;i<count;i++){
           const a=Math.atan2(t.y-p.y,t.x-p.x)+(i-(count-1)/2)*.12;
           G.projectiles.push({type:"fire",x:p.x,y:p.y,vx:Math.cos(a)*270,vy:Math.sin(a)*270,
-            r:(wp.evo?8:5)*wp.size,life:2.1,damage:(19+wp.lvl*5)*(wp.evo?1.7:1)*wp.might,pierce:wp.evo?3:0,crit:wp.crit});
+            r:(wp.evo?7:5)*wp.size,life:2.1,damage:fireBase*(wp.evo?1.45:1)*wp.might,pierce:wp.evo?2:0,crit:wp.crit});
         }
-        p.fireCd=(.78-wp.lvl*.055)*(wp.evo?.65:1)*wp.haste;
+        const fireLvlForCd=Math.min(wp.lvl,4.25);
+        p.fireCd=(.78-fireLvlForCd*.052)*(wp.evo?.72:1)*wp.haste;
       }
     }
   }
@@ -1267,6 +1322,7 @@ function updateEnemies(dt){
     if(Math.hypot(e.x-p.x,e.y-p.y)<e.r+p.r && e.hitCd<=0 && p.invuln<=0){
       let armor=1; // Reserved for future armor-like mechanics
       p.hp-=e.dmg*armor;p.invuln=.45;e.hitCd=.7;G.shake=7;sfx("hit");
+      G.noHitTime=0;G.pressureWarned=false;
       addText(p.x,p.y-18,"-"+Math.round(e.dmg),"#ff7c86",16);
       if(p.hp<=0){p.hp=0;endGame(false);return}
     }
@@ -1288,21 +1344,74 @@ function updateGems(dt){
   }
   G.gems=G.gems.filter(g=>!g.dead);
 }
+function syncCharacterProgress(showUnlock=true,countRun=false){
+  if(!G)return -1;
+  normalizeHeroProgress();
+  const cp=save.charProgress[G.player.heroId],oldTier=cp.tier;
+  const currentScore=Math.floor(G.score);
+  cp.totalScore+=Math.max(0,currentScore-(G.progressSavedScore||0));
+  G.progressSavedScore=currentScore;
+  cp.correct+=Math.max(0,G.correct-(G.progressSavedCorrect||0));
+  G.progressSavedCorrect=G.correct;
+  cp.questions+=Math.max(0,G.questions-(G.progressSavedQuestions||0));
+  G.progressSavedQuestions=G.questions;
+  cp.bestTime=Math.max(cp.bestTime,G.time);
+  if(G.beatBoss4)cp.boss4=true;
+  if(G.beatBoss8||G.completion)cp.boss8=true;
+  if(countRun&&!G.progressRunCounted){cp.runs++;G.progressRunCounted=true}
+  cp.tier=Math.max(cp.tier,computeUnlockedTier(cp));
+  writeSave();
+  if(cp.tier>oldTier&&showUnlock){
+    const hero=CHARACTERS[G.player.heroId],tier=HERO_TIERS[cp.tier];
+    sfx("evolve");showToast(`★ ${hero.name.toUpperCase()} ${tier.name.toUpperCase()} ★`,tier.color,2300);
+  }
+  return cp.tier>oldTier?cp.tier:-1;
+}
+function commitRunTotals(){
+  if(!G||G.runTotalsCommitted)return;
+  G.runTotalsCommitted=true;
+  const finalScore=Math.floor(G.score);
+  save.highScore=Math.max(save.highScore,finalScore);
+  save.totalScore+=finalScore;save.bestTime=Math.max(save.bestTime,G.time);
+  if(!save.mastery&&((G.completion&&finalScore>=12000)||save.totalScore>=40000))save.mastery=true;
+  syncCharacterProgress(false,true);
+  writeSave();
+}
+function saveAndExit(){
+  if(!G?.running)return;
+  syncCharacterProgress(false,true);commitRunTotals();
+  G.running=false;G.modal=false;
+  try{if(audioCtx&&audioCtx.state==="suspended")audioCtx.resume()}catch(e){}
+  stopMusic();
+  hud.classList.add("hidden");
+  overlays.question.classList.add("hidden");overlays.upgrade.classList.add("hidden");overlays.pause.classList.add("hidden");overlays.end.classList.add("hidden");
+  overlays.start.classList.remove("hidden");
+  updateMenu();
+}
+
 function gainXP(v){
   G.xp+=v;
   while(G.xp>=G.xpNeed){
     G.xp-=G.xpNeed;G.level++;G.xpNeed=Math.floor(18+G.level*6+Math.pow(G.level,1.23)*1.25);
     sfx("level");showToast("NIVEL "+G.level,"#7edcff",650);
+    if(G.level>=100&&!G.gigaSpawned)setTimeout(()=>{if(G?.running)spawnGigaBoss()},250);
     if(G.level%2===0){setTimeout(()=>{if(G?.running&&!G.modal)openReward(false)},180);break}
   }
 }
 function updateSpawns(dt){
-  const d=difficulty();
+  const d=difficulty(),pressure=noHitDanger();
   G.spawnAcc+=dt;
-  let interval=Math.max(.11,.64/d);
+  let interval=Math.max(.09,.66/d)/(1+pressure*.78);
   while(G.spawnAcc>interval){G.spawnAcc-=interval;spawnEnemy()}
+
   G.eliteAcc+=dt;
-  if(G.eliteAcc>Math.max(16,33-d*2.2)){G.eliteAcc=0;spawnElite();showToast("ÉLITE","#d997ff",500)}
+  const eliteInterval=Math.max(6.5,26-d*1.75)/(1+pressure*.32);
+  if(G.eliteAcc>eliteInterval){
+    G.eliteAcc=0;
+    const eliteWave=G.time>=720?2:1;
+    for(let i=0;i<eliteWave;i++)spawnElite();
+    showToast(eliteWave>1?"ÉLITES":"ÉLITE","#d997ff",500);
+  }
 
   const mins=[120,240,360,480];
   for(let i=0;i<mins.length;i++){
@@ -1311,19 +1420,25 @@ function updateSpawns(dt){
     }
   }
   if(G.time>=G.nextEndlessBoss){
-    spawnBoss(Math.floor(G.nextEndlessBoss/60));G.nextEndlessBoss+=120;
+    const bossWave=Math.min(3,1+Math.floor(Math.max(0,G.time-720)/360));
+    for(let i=0;i<bossWave;i++)spawnBoss(Math.floor(G.nextEndlessBoss/60));
+    const nextGap=Math.max(60,105-G.time/20);
+    G.nextEndlessBoss+=nextGap;
   }
 }
 function update(dt){
   const p=G.player;
   G.time+=dt;G.score+=dt*2;p.invuln=Math.max(0,p.invuln-dt);
+  G.noHitTime+=dt;G.progressSaveAcc+=dt;
+  if(G.noHitTime>=45&&!G.pressureWarned){G.pressureWarned=true;showToast("¡LA HORDA SE ENFURECE!","#ff9368",1500)}
+  if(G.progressSaveAcc>=5){G.progressSaveAcc=0;syncCharacterProgress(true,false)}
   let dx=0,dy=0;
   if(keys["w"]||keys["arrowup"])dy--;if(keys["s"]||keys["arrowdown"])dy++;
   if(keys["a"]||keys["arrowleft"])dx--;if(keys["d"]||keys["arrowright"])dx++;
   if(dx||dy){
     const l=Math.hypot(dx,dy);dx/=l;dy/=l;
     const sp=p.speed*(1+(p.passives.speed||0)*.08*((p.passiveQuality||{}).speed||1)+(p.heroSpeed||0));
-    p.x=clamp(p.x+dx*sp*dt,18,W-18);p.y=clamp(p.y+dy*sp*dt,18,H-62);
+    p.x=clamp(p.x+dx*sp*dt,18,W-18);p.y=clamp(p.y+dy*sp*dt,18,H-82);
     if(Math.abs(dx)>Math.abs(dy))p.dir=dx>0?"right":"left";else p.dir=dy>0?"down":"up";
   }
   fireWeapons(dt);updateProjectiles(dt);orbitHits(dt);updateEnemies(dt);updateGems(dt);updateSpawns(dt);
@@ -1444,7 +1559,7 @@ function drawGround(){
   brazier(170,H-112,0);brazier(W-178,116,1.7);
 
   // Darkened HUD-safe strip.
-  ctx.fillStyle="rgba(5,7,15,.26)";ctx.fillRect(0,H-58,W,58);
+  ctx.fillStyle="rgba(5,7,15,.26)";ctx.fillRect(0,H-82,W,82);
 }
 function drawGems(){
   for(const g of G.gems){
@@ -1487,6 +1602,8 @@ function drawProjectiles(){
 }
 function drawEnemyPixel(e){
   ctx.save();ctx.translate(Math.round(e.x),Math.round(e.y));let hurt=e.hurt>0;
+  const scale=e.type==="elite"?e.r/16:e.type==="boss"?e.r/27:e.type==="giga"?e.r/46:1;
+  ctx.scale(scale,scale);
   if(e.type==="bat"){
     ctx.fillStyle=hurt?"#fff":"#9b65d8";ctx.fillRect(-7,-4,14,10);ctx.fillRect(-13,-6,7,5);ctx.fillRect(6,-6,7,5);
     ctx.fillStyle="#ffdf66";ctx.fillRect(-4,-1,2,2);ctx.fillRect(2,-1,2,2);
@@ -1502,15 +1619,19 @@ function drawEnemyPixel(e){
   }else if(e.type==="elite"){
     ctx.fillStyle=hurt?"#fff":"#b46cff";ctx.fillRect(-14,-12,28,27);ctx.fillRect(-18,-6,6,12);ctx.fillRect(12,-6,6,12);
     ctx.fillStyle="#ffd45a";ctx.fillRect(-7,-5,4,4);ctx.fillRect(3,-5,4,4);
+  }else if(e.type==="giga"){
+    ctx.fillStyle=hurt?"#fff":"#621f55";ctx.fillRect(-25,-24,50,49);ctx.fillRect(-36,-16,12,23);ctx.fillRect(24,-16,12,23);
+    ctx.fillStyle="#a53f66";ctx.fillRect(-19,-31,10,10);ctx.fillRect(9,-31,10,10);ctx.fillRect(-8,-29,16,8);
+    ctx.fillStyle="#ffe165";ctx.fillRect(-14,-8,9,7);ctx.fillRect(5,-8,9,7);
+    ctx.fillStyle="#220d25";ctx.fillRect(-10,9,20,6);ctx.fillRect(-5,15,10,4);
   }else{
     ctx.fillStyle=hurt?"#fff":"#b93558";ctx.fillRect(-23,-22,46,45);ctx.fillRect(-31,-15,9,18);ctx.fillRect(22,-15,9,18);
     ctx.fillStyle="#ffdb63";ctx.fillRect(-13,-8,8,6);ctx.fillRect(5,-8,8,6);
     ctx.fillStyle="#5e1831";ctx.fillRect(-8,8,16,5);
   }
-  // health bars for elite/boss
-  if(e.type==="elite"||e.type==="boss"){
-    const bw=e.type==="boss"?58:34;ctx.fillStyle="#090b13";ctx.fillRect(-bw/2,-e.r-12,bw,5);
-    ctx.fillStyle=e.type==="boss"?"#ff5266":"#c16aff";ctx.fillRect(-bw/2,-e.r-12,bw*(e.hp/e.maxHp),5);
+  if(e.type==="elite"||e.type==="boss"||e.type==="giga"){
+    const bw=e.type==="giga"?78:e.type==="boss"?58:34;ctx.fillStyle="#090b13";ctx.fillRect(-bw/2,-(e.type==="giga"?37:e.type==="boss"?39:28),bw,5);
+    ctx.fillStyle=e.type==="giga"?"#ffd45a":e.type==="boss"?"#ff5266":"#c16aff";ctx.fillRect(-bw/2,-(e.type==="giga"?37:e.type==="boss"?39:28),bw*(e.hp/e.maxHp),5);
   }
   ctx.restore();
 }
@@ -1640,15 +1761,13 @@ function renderWeaponList(){
   if(!G)return;
   let arr=[];
   const hero=CHARACTERS[G.player.heroId],ti=G.player.heroTier||0,tier=HERO_TIERS[ti];
-  if(hero)arr.push(`<div class="slot" style="border-left-color:${tier.color}"><b>${hero.name}</b> · <span style="color:${tier.color}">${tier.name}</span> · ${scaledTraitText(hero,ti)}</div>`);
+  if(hero)arr.push(`<div class="slot" style="border-left-color:${tier.color}" title="${hero.name} · ${tier.name}"><b>${hero.name}</b> ${tierStars(ti)}</div>`);
   for(const [id,w] of Object.entries(G.player.weapons)){
     const d=WEAPON_DEFS[id];
-    const qIndex=RARITIES.reduce((best,r,i)=>Math.abs(r.mult-(w.quality||1))<Math.abs(RARITIES[best].mult-(w.quality||1))?i:best,0);
-    const q=RARITIES[qIndex];
-    arr.push(`<div class="slot">${d.icon} ${w.evolved?d.evo:d.name} · Nv.${w.level}${w.evolved?" ★":""}${w.level===1&&!w.evolved?` · ${q.name}`:""}</div>`);
+    arr.push(`<div class="slot" title="${w.evolved?d.evo:d.name}">${d.icon} ${w.evolved?"★":`Nv.${w.level}`}</div>`);
   }
   for(const [id,lvl] of Object.entries(G.player.passives)){
-    const d=PASSIVE_DEFS[id];arr.push(`<div class="slot" style="border-left-color:#b9a358">${d.icon} ${d.name} · ${lvl}/${d.max}</div>`);
+    const d=PASSIVE_DEFS[id];arr.push(`<div class="slot" style="border-left-color:#b9a358" title="${d.name}">${d.icon} ${lvl}</div>`);
   }
   $("weapons").innerHTML=arr.join("");
 }
@@ -1753,6 +1872,7 @@ function answerQuestion(correct,btn,answers){
     $("feedback").style.color="#ff9299";
     setTimeout(()=>finishReward(false,false),900);
   }
+  syncCharacterProgress(true,false);
 }
 function finishReward(correct,jackpot){
   let c={...G.pendingCard};
@@ -1804,22 +1924,10 @@ function endGame(manual=false){
   if(!G?.running)return;
   G.running=false;G.modal=true;setMusicLevel(.035);
   const finalScore=Math.floor(G.score),time=G.time;
-  save.highScore=Math.max(save.highScore,finalScore);
-  save.totalScore+=finalScore;save.bestTime=Math.max(save.bestTime,time);
-
-  // Character-specific progression.
-  normalizeHeroProgress();
-  const cp=save.charProgress[G.player.heroId],oldTier=cp.tier;
-  cp.runs++;cp.bestTime=Math.max(cp.bestTime,time);cp.totalScore+=finalScore;
-  cp.correct+=G.correct;cp.questions+=G.questions;
-  if(G.beatBoss4)cp.boss4=true;
-  if(G.beatBoss8||G.completion)cp.boss8=true;
-  cp.tier=Math.max(cp.tier,computeUnlockedTier(cp));
-  const newHeroTier=cp.tier>oldTier?cp.tier:-1;
-
-  const newlyMastered=!save.mastery && ((G.completion&&finalScore>=25000)||save.totalScore>=100000);
-  if(newlyMastered)save.mastery=true;
-  writeSave();
+  const wasMastered=!!save.mastery;
+  const newHeroTier=syncCharacterProgress(false,true);
+  commitRunTotals();
+  const newlyMastered=!wasMastered&&save.mastery;
 
   hud.classList.add("hidden");overlays.question.classList.add("hidden");overlays.upgrade.classList.add("hidden");
   $("endTitle").textContent=newlyMastered?"★ MAESTRÍA DESBLOQUEADA ★":G.completion?"PARTIDA COMPLETADA":"FIN DE LA PARTIDA";
@@ -1842,12 +1950,12 @@ function endGame(manual=false){
     <div class="stat"><b>${G.correct}/${G.questions}</b><span>Preguntas</span></div>
     <div class="stat"><b>${G.level}</b><span>Nivel</span></div>
     <div class="stat"><b>${G.correctStreak}</b><span>Racha final</span></div>`;
-  const pct=Math.min(100,save.totalScore/100000*100);
+  const pct=Math.min(100,save.totalScore/40000*100);
   $("masteryProgress").innerHTML=save.mastery
     ? `<div id="masteryBadge">★ MAESTRÍA DESBLOQUEADA ★</div>`
-    : `<b>Progreso de maestría acumulada:</b> ${save.totalScore.toLocaleString()} / 100,000
+    : `<b>Progreso de maestría acumulada:</b> ${save.totalScore.toLocaleString()} / 40,000
        <div class="progress"><div style="width:${pct}%"></div></div>
-       <div style="font-size:13px;color:#aeb6d9;margin-top:7px">Ruta alternativa: derrota al jefe de 8:00 y consigue 25,000 puntos en una sola partida.</div>`;
+       <div style="font-size:13px;color:#aeb6d9;margin-top:7px">Ruta alternativa: derrota al jefe de 8:00 y consigue 12,000 puntos en una sola partida.</div>`;
   overlays.end.classList.remove("hidden");
 }
 
@@ -1863,6 +1971,8 @@ function updateMenu(){
   renderHeroChoices();
 }
 $("startBtn").onclick=newGame;
+$("pauseBtn").onclick=()=>{if(G?.running&&!G.modal)togglePause()};
+$("saveExitBtn").onclick=saveAndExit;
 $("againBtn").onclick=newGame;
 $("menuBtn").onclick=()=>{stopMusic();overlays.end.classList.add("hidden");overlays.start.classList.remove("hidden");updateMenu()};
 $("soundBtn").onclick=toggleSound;
@@ -1871,7 +1981,7 @@ $("resetBtn").onclick=()=>{
     localStorage.removeItem(SAVE_KEY);save=loadSave();updateMenu();
   }
 };
-window.addEventListener("beforeunload",()=>{if(G?.running)writeSave()});
+window.addEventListener("beforeunload",()=>{if(G?.running){syncCharacterProgress(false,false);writeSave()}});
 updateMenu();
 drawGround();
 </script>
