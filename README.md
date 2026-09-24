@@ -1,1 +1,1 @@
-# Horda---Lectura-1
+# Horda - Practicar el pretérito.
