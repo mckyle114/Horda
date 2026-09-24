@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HORDA</title>
+<title>HORDA: PRETÉRITO</title>
 <style>
   :root{
     --bg:#0d1020; --panel:#171b31; --panel2:#222844; --ink:#f5f1df;
@@ -545,10 +545,10 @@
         <div id="masteryBadge" class="hidden">★ MAESTRÍA DESBLOQUEADA ★</div>
 
         <div class="titleWrap">
-          <div class="titleEyebrow">SUPERVIVENCIA ARCANA</div>
+          <div class="titleEyebrow">PRÁCTICA DEL PRETÉRITO</div>
           <div class="titleMark">HORDA</div>
           <div class="titleRule"></div>
-          <p class="titleDesc">Sobrevive. Mejora. Resiste.</p>
+          <p class="titleDesc">Conjuga. Mejora. Sobrevive.</p>
         </div>
 
 
@@ -570,7 +570,7 @@
             <div class="missionBox">
               <div class="missionLabel">MISIÓN</div>
               <div class="missionMain">Derrota al jefe de <b>8:00</b>.</div>
-              <div class="missionSub">Después, la horda sigue.</div>
+              <div class="missionSub">Conjuga verbos en pretérito cada 2 niveles. Después, la horda sigue.</div>
             </div>
           </div>
 
@@ -605,7 +605,7 @@
 
   <div id="questionOverlay" class="overlay hidden">
     <div class="panel">
-      <div style="font-size:13px;color:#9fa9ce;margin-bottom:8px">RESPONDE PARA POTENCIAR TU RECOMPENSA</div>
+      <div style="font-size:13px;color:#9fa9ce;margin-bottom:8px">CONJUGA EL VERBO EN EL PRETÉRITO</div>
       <div id="questionText" class="question"></div>
       <div id="answers" class="answers"></div>
       <div id="feedback"></div>
@@ -634,7 +634,7 @@
 "use strict";
 
 /* ==========================================================
-   CRÓNICAS DE EMILIA: SUPERVIVENCIA
+   HORDA: PRETÉRITO
    Un solo archivo HTML. Sin librerías ni recursos externos.
    ========================================================== */
 
@@ -649,16 +649,16 @@ const overlays={
   pause:$("pauseOverlay"), end:$("endOverlay")
 };
 
-const SAVE_KEY="emiliaSurvivors_v1";
+const SAVE_KEY="hordaPreterito_v1";
 let save=loadSave();
 function loadSave(){
   try{
     return Object.assign({
       highScore:0,totalScore:0,bestTime:0,totalCorrect:0,totalQuestions:0,
-      mastery:false,boss8Beaten:false,selectedChar:"brasa"
+      mastery:false,boss8Beaten:false,selectedChar:"brasa",recentQuestions:[]
     }, JSON.parse(localStorage.getItem(SAVE_KEY)||"{}"));
   }catch(e){
-    return {highScore:0,totalScore:0,bestTime:0,totalCorrect:0,totalQuestions:0,mastery:false,boss8Beaten:false,selectedChar:"brasa"};
+    return {highScore:0,totalScore:0,bestTime:0,totalCorrect:0,totalQuestions:0,mastery:false,boss8Beaten:false,selectedChar:"brasa",recentQuestions:[]};
   }
 }
 function writeSave(){localStorage.setItem(SAVE_KEY,JSON.stringify(save));}
@@ -909,37 +909,36 @@ function setMusicLevel(v=.105){
   musicGain.gain.setTargetAtTime(soundOn?v:0,audioCtx.currentTime,.05);
 }
 
-const QUESTIONS=[
- {q:"¿Cuántos seguidores tenía Emilia aproximadamente?",a:["Casi novecientos","Casi cien","Más de cinco mil"],c:0},
- {q:"¿Qué publicaba Emilia casi todos los días?",a:["Fotos, videos y comentarios","Solo tareas de la escuela","Noticias deportivas"],c:0},
- {q:"¿Qué ocurría en la escuela por su actividad en redes?",a:["Muchas personas la reconocían","Nadie sabía quién era","Los maestros cerraron su cuenta"],c:0},
- {q:"¿Cómo se sentía Emilia al principio con tanta atención?",a:["Le encantaba","Le daba miedo","No le importaba"],c:0},
- {q:"¿Qué empezó a preocuparle demasiado?",a:["Su reputación","Sus calificaciones","El clima"],c:0},
- {q:"Si sus amigos hablaban de una canción nueva, ¿qué hacía Emilia?",a:["Decía que también le gustaba","Les decía que dejaran de escucharla","Nunca respondía"],c:0},
- {q:"¿Qué hacía Emilia cuando todos llevaban cierto estilo de ropa?",a:["Intentaba vestirse igual","Usaba un uniforme diferente","Dejaba de ir a la escuela"],c:0},
- {q:"¿Por qué intentaba actuar como los demás?",a:["Quería encajar y demostrar que pertenecía al grupo","Quería ganar dinero","Quería mudarse de escuela"],c:0},
- {q:"¿Qué noticia difícil recibió Emilia?",a:["No consiguió un papel en la obra de teatro","Perdió su teléfono","Suspendieron las clases"],c:0},
- {q:"¿Cómo reaccionó Emilia después de no conseguir el papel?",a:["Se sintió avergonzada y dejó de publicar varios días","Publicó más videos que antes","Celebró con sus seguidores"],c:0},
- {q:"¿Qué preguntaba la mayoría de las personas que le escribieron?",a:["Cuándo publicaría otro video o por qué desapareció","Cómo podían ayudarla con la obra","Si necesitaba estudiar para un examen"],c:0},
- {q:"¿Quiénes reaccionaron de una manera diferente?",a:["Clara y Sofía","Dos maestros","Sus seguidores nuevos"],c:0},
- {q:"¿Qué hizo Clara?",a:["Fue a casa de Emilia y la escuchó","Le pidió una foto","Publicó un video sobre Emilia"],c:0},
- {q:"¿Qué le dijo Sofía a Emilia?",a:["Que no tenía que fingir que todo estaba bien","Que debía cerrar su cuenta para siempre","Que debía conseguir más seguidores"],c:0},
- {q:"¿Qué NO le pidieron Clara y Sofía?",a:["Fotos ni publicaciones","Que hablara de lo ocurrido","Que pasara tiempo con ellas"],c:0},
- {q:"¿Qué comprendió Emilia sobre muchas personas?",a:["Conocían su imagen, pero pocas la conocían realmente","Todas eran sus amigas cercanas","Nadie había visto sus publicaciones"],c:0},
- {q:"¿Qué decidió hacer con su cuenta?",a:["Mantenerla","Eliminarla inmediatamente","Dársela a Clara"],c:0},
- {q:"¿De qué decidió depender menos?",a:["De la opinión de sus seguidores","De sus amigas Clara y Sofía","De la escuela"],c:0},
- {q:"¿A quiénes empezó a dedicar más tiempo?",a:["A las personas con quienes podía ser ella misma","A personas que pedían más videos","A desconocidos en internet"],c:0},
- {q:"Al final, ¿qué cambió principalmente Emilia?",a:["La importancia que daba a la opinión de sus seguidores","Su nombre de usuario","La escuela a la que asistía"],c:0}
-];
+const QUESTIONS=[{"p":"yo","q":"Ayer, yo ___ con mi profesora después de clase. (hablar)","a":["hablé","habló","hablaba"],"c":0,"type":"regular-ar"},{"p":"yo","q":"Anoche, yo ___ para el examen de ciencias. (estudiar)","a":["estudié","estudiaste","estudiaba"],"c":0,"type":"regular-ar"},{"p":"yo","q":"En el almuerzo, yo ___ una ensalada y una manzana. (comer)","a":["comí","comió","comía"],"c":0,"type":"regular-er"},{"p":"yo","q":"El año pasado, yo ___ en otra ciudad. (vivir)","a":["viví","vivió","vivía"],"c":0,"type":"regular-ir"},{"p":"yo","q":"El sábado, yo ___ al centro con mis amigos. (ir)","a":["fui","fue","iba"],"c":0,"type":"ir-ser"},{"p":"yo","q":"Ayer, yo ___ mucha tarea después de la escuela. (tener)","a":["tuve","tuvo","tenía"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Esta mañana, yo ___ mi cama antes de salir. (hacer)","a":["hice","hizo","hacía"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Durante el viaje, yo ___ muy cansado al final del día. (estar)","a":["estuve","estuvo","estaba"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Finalmente, yo ___ terminar el proyecto a tiempo. (poder)","a":["pude","pudo","podía"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Al principio, yo no ___ ir a la fiesta. (querer)","a":["quise","quiso","quería"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Ayer, yo ___ temprano a la escuela para practicar. (venir)","a":["vine","vino","venía"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Después de pensarlo, yo ___ la verdad. (decir)","a":["dije","dijo","decía"],"c":0,"type":"j-stem"},{"p":"yo","q":"Al llegar a casa, yo ___ la mochila sobre la mesa. (poner)","a":["puse","puso","ponía"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"En ese momento, yo ___ la respuesta correcta. (saber)","a":["supe","supo","sabía"],"c":0,"type":"irregular-stem"},{"p":"yo","q":"Ayer, yo ___ cinco dólares para el regalo. (dar)","a":["di","dio","daba"],"c":0,"type":"dar-ver"},{"p":"yo","q":"Durante el paseo, yo ___ un venado cerca del río. (ver)","a":["vi","vio","veía"],"c":0,"type":"dar-ver"},{"p":"yo","q":"Ayer, yo ___ mis llaves por toda la casa. (buscar)","a":["busqué","buscé","buscó"],"c":0,"type":"car-gar-zar"},{"p":"yo","q":"Yo ___ tarde porque había mucho tráfico. (llegar)","a":["llegué","llegé","llegó"],"c":0,"type":"car-gar-zar"},{"p":"yo","q":"Esta mañana, yo ___ la tarea antes del desayuno. (empezar)","a":["empecé","empezé","empezó"],"c":0,"type":"car-gar-zar"},{"p":"yo","q":"Anoche, yo ___ un artículo interesante sobre el espacio. (leer)","a":["leí","leyó","leía"],"c":0,"type":"y-verb"},{"p":"tú","q":"Ayer, tú ___ en el proyecto con tu grupo. (trabajar)","a":["trabajaste","trabajó","trabajabas"],"c":0,"type":"regular-ar"},{"p":"tú","q":"El sábado, tú ___ unos zapatos nuevos. (comprar)","a":["compraste","compró","comprabas"],"c":0,"type":"regular-ar"},{"p":"tú","q":"Después del partido, tú ___ mucha agua. (beber)","a":["bebiste","bebió","bebías"],"c":0,"type":"regular-er"},{"p":"tú","q":"Anoche, tú ___ un mensaje a tu amiga. (escribir)","a":["escribiste","escribió","escribías"],"c":0,"type":"regular-ir"},{"p":"tú","q":"Ayer, tú ___ a la biblioteca después de clases. (ir)","a":["fuiste","fue","ibas"],"c":0,"type":"ir-ser"},{"p":"tú","q":"En la obra, tú ___ el personaje principal. (ser)","a":["fuiste","fue","eras"],"c":0,"type":"ir-ser"},{"p":"tú","q":"Tú ___ un problema con la computadora. (tener)","a":["tuviste","tuvo","tenías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Anoche, tú ___ la cena para tu familia. (hacer)","a":["hiciste","hizo","hacías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Durante el concierto, tú ___ cerca del escenario. (estar)","a":["estuviste","estuvo","estabas"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Tú ___ abrir la puerta después de varios intentos. (poder)","a":["pudiste","pudo","podías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Al principio, tú no ___ participar en el concurso. (querer)","a":["quisiste","quiso","querías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Tú ___ a mi casa después del entrenamiento. (venir)","a":["viniste","vino","venías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Tú me ___ que el examen fue difícil. (decir)","a":["dijiste","dijo","decías"],"c":0,"type":"j-stem"},{"p":"tú","q":"Antes de la película, tú ___ el teléfono en silencio. (poner)","a":["pusiste","puso","ponías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Después del anuncio, tú ___ lo que había ocurrido. (saber)","a":["supiste","supo","sabías"],"c":0,"type":"irregular-stem"},{"p":"tú","q":"Tú le ___ una nota al maestro. (dar)","a":["diste","dio","dabas"],"c":0,"type":"dar-ver"},{"p":"tú","q":"Tú ___ esa película el fin de semana pasado. (ver)","a":["viste","vio","veías"],"c":0,"type":"dar-ver"},{"p":"tú","q":"Antes de empezar, tú ___ las instrucciones dos veces. (leer)","a":["leíste","leyó","leías"],"c":0,"type":"y-verb"},{"p":"tú","q":"Desde el pasillo, tú ___ un ruido extraño. (oír)","a":["oíste","oyó","oías"],"c":0,"type":"y-verb"},{"p":"tú","q":"Después de la caminata, tú ___ ocho horas seguidas. (dormir)","a":["dormiste","durmió","dormías"],"c":0,"type":"stem-change-ir"},{"p":"él/ella/usted","q":"Sofía ___ con el director después de la reunión. (hablar)","a":["habló","hablaron","hablaba"],"c":0,"type":"regular-ar"},{"p":"él/ella/usted","q":"Marcos ___ para la prueba durante toda la tarde. (estudiar)","a":["estudió","estudié","estudiaba"],"c":0,"type":"regular-ar"},{"p":"él/ella/usted","q":"Ella ___ pizza con sus amigos anoche. (comer)","a":["comió","comieron","comía"],"c":0,"type":"regular-er"},{"p":"él/ella/usted","q":"Él ___ en Madrid durante un semestre. (vivir)","a":["vivió","vivieron","vivía"],"c":0,"type":"regular-ir"},{"p":"él/ella/usted","q":"Usted ___ a la reunión de ayer. (ir)","a":["fue","fueron","iba"],"c":0,"type":"ir-ser"},{"p":"él/ella/usted","q":"Diego ___ mucha suerte en el concurso. (tener)","a":["tuvo","tuvieron","tenía"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"Mi hermana ___ toda la tarea antes de cenar. (hacer)","a":["hizo","hicieron","hacía"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"La profesora ___ ausente el lunes. (estar)","a":["estuvo","estuvieron","estaba"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"Ana ___ resolver el problema sin ayuda. (poder)","a":["pudo","pudieron","podía"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"El estudiante no ___ responder la última pregunta. (querer)","a":["quiso","quisieron","quería"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"Mi primo ___ a visitarnos el domingo. (venir)","a":["vino","vinieron","venía"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"Ella ___ la verdad frente a toda la clase. (decir)","a":["dijo","dijeron","decía"],"c":0,"type":"j-stem"},{"p":"él/ella/usted","q":"Pablo ___ los libros en su mochila. (poner)","a":["puso","pusieron","ponía"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"Mi mamá ___ la noticia por la mañana. (saber)","a":["supo","supieron","sabía"],"c":0,"type":"irregular-stem"},{"p":"él/ella/usted","q":"El entrenador ___ un consejo al equipo. (dar)","a":["dio","dieron","daba"],"c":0,"type":"dar-ver"},{"p":"él/ella/usted","q":"Usted ___ el accidente desde la ventana. (ver)","a":["vio","vieron","veía"],"c":0,"type":"dar-ver"},{"p":"él/ella/usted","q":"Camila ___ el mensaje apenas llegó a casa. (leer)","a":["leyó","leyeron","leía"],"c":0,"type":"y-verb"},{"p":"él/ella/usted","q":"El camarero ___ la sopa primero. (servir)","a":["sirvió","sirvieron","servía"],"c":0,"type":"stem-change-ir"},{"p":"él/ella/usted","q":"El niño ___ ayuda cuando no entendió la tarea. (pedir)","a":["pidió","pidieron","pedía"],"c":0,"type":"stem-change-ir"},{"p":"él/ella/usted","q":"Después del viaje, Mateo ___ casi doce horas. (dormir)","a":["durmió","durmieron","dormía"],"c":0,"type":"stem-change-ir"},{"p":"nosotros","q":"Ayer, nosotros ___ sobre el proyecto durante el almuerzo. (hablar)","a":["hablamos","hablaron","hablábamos"],"c":0,"type":"regular-ar"},{"p":"nosotros","q":"Anoche, nosotros ___ juntos para el examen. (estudiar)","a":["estudiamos","estudiaron","estudiábamos"],"c":0,"type":"regular-ar"},{"p":"nosotros","q":"Después del partido, nosotros ___ en un restaurante. (comer)","a":["comimos","comieron","comíamos"],"c":0,"type":"regular-er"},{"p":"nosotros","q":"Durante el verano, nosotros ___ con nuestros abuelos. (vivir)","a":["vivimos","vivieron","vivíamos"],"c":0,"type":"regular-ir"},{"p":"nosotros","q":"El sábado, nosotros ___ al lago muy temprano. (ir)","a":["fuimos","fueron","íbamos"],"c":0,"type":"ir-ser"},{"p":"nosotros","q":"Ayer, nosotros ___ suficiente tiempo para terminar. (tener)","a":["tuvimos","tuvieron","teníamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Nosotros ___ un cartel para la presentación. (hacer)","a":["hicimos","hicieron","hacíamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Durante la tormenta, nosotros ___ dentro de la casa. (estar)","a":["estuvimos","estuvieron","estábamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Al final, nosotros ___ solucionar el problema. (poder)","a":["pudimos","pudieron","podíamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Nosotros ___ ayudar aunque era tarde. (querer)","a":["quisimos","quisieron","queríamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Nosotros ___ a la escuela para el concierto. (venir)","a":["vinimos","vinieron","veníamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Después de discutirlo, nosotros ___ nuestra opinión. (decir)","a":["dijimos","dijeron","decíamos"],"c":0,"type":"j-stem"},{"p":"nosotros","q":"Nosotros ___ las sillas junto a la pared. (poner)","a":["pusimos","pusieron","poníamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"En ese momento, nosotros ___ quién ganó. (saber)","a":["supimos","supieron","sabíamos"],"c":0,"type":"irregular-stem"},{"p":"nosotros","q":"Nosotros ___ comida a la familia nueva. (dar)","a":["dimos","dieron","dábamos"],"c":0,"type":"dar-ver"},{"p":"nosotros","q":"Desde la montaña, nosotros ___ todo el valle. (ver)","a":["vimos","vieron","veíamos"],"c":0,"type":"dar-ver"},{"p":"nosotros","q":"Nosotros ___ el artículo antes de la discusión. (leer)","a":["leímos","leyeron","leíamos"],"c":0,"type":"y-verb"},{"p":"nosotros","q":"En clase, nosotros ___ una forma nueva de resolverlo. (aprender)","a":["aprendimos","aprendieron","aprendíamos"],"c":0,"type":"regular-er"},{"p":"nosotros","q":"Ayer, nosotros ___ los resultados por correo. (recibir)","a":["recibimos","recibieron","recibíamos"],"c":0,"type":"regular-ir"},{"p":"nosotros","q":"Nosotros ___ todos los materiales para la actividad. (traer)","a":["trajimos","trajeron","traíamos"],"c":0,"type":"j-stem"},{"p":"ellos/ellas","q":"Ellos ___ con el maestro después de clase. (hablar)","a":["hablaron","habló","hablaban"],"c":0,"type":"regular-ar"},{"p":"ellos/ellas","q":"Ellas ___ para el examen durante dos horas. (estudiar)","a":["estudiaron","estudió","estudiaban"],"c":0,"type":"regular-ar"},{"p":"ellos/ellas","q":"Mis amigos ___ tacos después del partido. (comer)","a":["comieron","comió","comían"],"c":0,"type":"regular-er"},{"p":"ellos/ellas","q":"Ellos ___ en México durante un año. (vivir)","a":["vivieron","vivió","vivían"],"c":0,"type":"regular-ir"},{"p":"ellos/ellas","q":"Ellas ___ al museo el viernes pasado. (ir)","a":["fueron","fue","iban"],"c":0,"type":"ir-ser"},{"p":"ellos/ellas","q":"Los estudiantes ___ poco tiempo para responder. (tener)","a":["tuvieron","tuvo","tenían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Mis hermanos ___ la cena anoche. (hacer)","a":["hicieron","hizo","hacían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Ellos ___ en casa durante la tormenta. (estar)","a":["estuvieron","estuvo","estaban"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Las jugadoras ___ ganar el último partido. (poder)","a":["pudieron","pudo","podían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Ellos no ___ salir porque tenían tarea. (querer)","a":["quisieron","quiso","querían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Mis primos ___ a visitarnos el fin de semana. (venir)","a":["vinieron","vino","venían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Ellas ___ que el plan había cambiado. (decir)","a":["dijeron","dijo","decían"],"c":0,"type":"j-stem"},{"p":"ellos/ellas","q":"Los estudiantes ___ sus mochilas en el piso. (poner)","a":["pusieron","puso","ponían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Ellos ___ la respuesta antes que nosotros. (saber)","a":["supieron","supo","sabían"],"c":0,"type":"irregular-stem"},{"p":"ellos/ellas","q":"Mis vecinos ___ ropa para la colecta. (dar)","a":["dieron","dio","daban"],"c":0,"type":"dar-ver"},{"p":"ellos/ellas","q":"Ellas ___ el partido desde la primera fila. (ver)","a":["vieron","vio","veían"],"c":0,"type":"dar-ver"},{"p":"ellos/ellas","q":"Los estudiantes ___ el cuento completo. (leer)","a":["leyeron","leyó","leían"],"c":0,"type":"y-verb"},{"p":"ellos/ellas","q":"Ellos ___ otra explicación al profesor. (pedir)","a":["pidieron","pidió","pedían"],"c":0,"type":"stem-change-ir"},{"p":"ellos/ellas","q":"Los niños ___ profundamente después del viaje. (dormir)","a":["durmieron","durmió","dormían"],"c":0,"type":"stem-change-ir"},{"p":"ellos/ellas","q":"Ellas ___ sentarse cerca de la ventana. (preferir)","a":["prefirieron","prefirió","preferían"],"c":0,"type":"stem-change-ir"},{"p":"ustedes","q":"Ayer, ustedes ___ mucho durante la actividad. (trabajar)","a":["trabajaron","trabajó","trabajaban"],"c":0,"type":"regular-ar"},{"p":"ustedes","q":"Ustedes ___ las entradas por internet. (comprar)","a":["compraron","compró","compraban"],"c":0,"type":"regular-ar"},{"p":"ustedes","q":"Después de correr, ustedes ___ toda el agua. (beber)","a":["bebieron","bebió","bebían"],"c":0,"type":"regular-er"},{"p":"ustedes","q":"Ustedes ___ sus respuestas en una hoja. (escribir)","a":["escribieron","escribió","escribían"],"c":0,"type":"regular-ir"},{"p":"ustedes","q":"El sábado, ustedes ___ al partido juntos. (ir)","a":["fueron","fue","iban"],"c":0,"type":"ir-ser"},{"p":"ustedes","q":"Durante la espera, ustedes ___ muy pacientes. (ser)","a":["fueron","fue","eran"],"c":0,"type":"ir-ser"},{"p":"ustedes","q":"Ustedes ___ una buena idea para el proyecto. (tener)","a":["tuvieron","tuvo","tenían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Ustedes ___ todo lo necesario antes de salir. (hacer)","a":["hicieron","hizo","hacían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Ayer, ustedes ___ en la biblioteca hasta tarde. (estar)","a":["estuvieron","estuvo","estaban"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Ustedes ___ terminar antes de la campana. (poder)","a":["pudieron","pudo","podían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Al final, ustedes ___ participar en el concurso. (querer)","a":["quisieron","quiso","querían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Ustedes ___ a la reunión aunque llovía. (venir)","a":["vinieron","vino","venían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Ustedes ___ exactamente lo que ocurrió. (decir)","a":["dijeron","dijo","decían"],"c":0,"type":"j-stem"},{"p":"ustedes","q":"Ustedes ___ los teléfonos en una caja. (poner)","a":["pusieron","puso","ponían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Después de la explicación, ustedes ___ la respuesta. (saber)","a":["supieron","supo","sabían"],"c":0,"type":"irregular-stem"},{"p":"ustedes","q":"Ustedes ___ muchas ideas durante la reunión. (dar)","a":["dieron","dio","daban"],"c":0,"type":"dar-ver"},{"p":"ustedes","q":"Ustedes ___ el arcoíris desde el patio. (ver)","a":["vieron","vio","veían"],"c":0,"type":"dar-ver"},{"p":"ustedes","q":"Desde afuera, ustedes ___ la música del gimnasio. (oír)","a":["oyeron","oyó","oían"],"c":0,"type":"y-verb"},{"p":"ustedes","q":"En la cena, ustedes ___ la comida a todos los invitados. (servir)","a":["sirvieron","sirvió","servían"],"c":0,"type":"stem-change-ir"},{"p":"ustedes","q":"Durante la práctica, ustedes ___ el ejercicio varias veces. (repetir)","a":["repitieron","repitió","repetían"],"c":0,"type":"stem-change-ir"}];
+const PERSONS=["yo","tú","él/ella/usted","nosotros","ellos/ellas","ustedes"];
 let qOrder=[],qIndex=0;
+
+function shuffleList(arr){
+  for(let i=arr.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[arr[i],arr[j]]=[arr[j],arr[i]]}
+  return arr;
+}
 function resetQuestionDeck(){
-  qOrder=QUESTIONS.map((_,i)=>i);
-  for(let i=qOrder.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[qOrder[i],qOrder[j]]=[qOrder[j],qOrder[i]]}
+  const recent=new Set(save.recentQuestions||[]);
+  const buckets={};
+  for(const p of PERSONS){
+    const ids=QUESTIONS.map((q,i)=>q.p===p?i:-1).filter(i=>i>=0);
+    const fresh=shuffleList(ids.filter(i=>!recent.has(i)));
+    const old=shuffleList(ids.filter(i=>recent.has(i)));
+    buckets[p]=fresh.concat(old);
+  }
+  qOrder=[];
+  while(PERSONS.some(p=>buckets[p].length)){
+    const cycle=shuffleList([...PERSONS]);
+    for(const p of cycle)if(buckets[p].length)qOrder.push(buckets[p].shift());
+  }
   qIndex=0;
 }
 function nextQuestion(){
   if(qIndex>=qOrder.length)resetQuestionDeck();
-  return QUESTIONS[qOrder[qIndex++]];
+  const id=qOrder[qIndex++];
+  save.recentQuestions=[id,...(save.recentQuestions||[]).filter(x=>x!==id)].slice(0,36);
+  writeSave();
+  return QUESTIONS[id];
 }
 
 const RARITIES=[
@@ -2666,14 +2665,15 @@ function answerQuestion(correct,btn,answers){
   if(correct){
     G.correct++;G.correctStreak++;save.totalCorrect++;btn.classList.add("correct");sfx("good");
     const jackpot=Math.random()<.05;
-    $("feedback").textContent=jackpot?"¡JACKPOT! Respuesta correcta: salto enorme de poder.":"¡Correcto! Tu mejora recibe un nivel extra de poder.";
+    $("feedback").textContent=jackpot?"¡JACKPOT! Forma correcta: salto enorme de poder.":"¡Correcto! Tu mejora recibe un nivel extra de poder.";
     $("feedback").style.color="#78eca1";
     setTimeout(()=>finishReward(true,jackpot),jackpot?1050:700);
   }else{
     G.correctStreak=0;btn.classList.add("wrong");sfx("bad");
-    $("feedback").textContent="Incorrecto. Recibes la versión normal de la mejora.";
+    const correctText=answers.find(a=>a.correct)?.text||"";
+    $("feedback").textContent=`Incorrecto. Correcto: ${correctText}`;
     $("feedback").style.color="#ff9299";
-    setTimeout(()=>finishReward(false,false),900);
+    setTimeout(()=>finishReward(false,false),1100);
   }
   syncCharacterProgress(true,false);
 }
