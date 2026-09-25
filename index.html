@@ -377,12 +377,12 @@
   @keyframes surgePulse{from{filter:brightness(.9)}to{filter:brightness(1.35)}}
 
   #scoreLine{text-align:right;font-size:14px;line-height:1.45}
-  #bottomHud{position:absolute;left:14px;right:14px;bottom:12px}
-  .bar{height:14px;background:#090b13;border:2px solid #000;position:relative;overflow:hidden}
+  #bottomHud{position:absolute;left:10px;right:10px;bottom:4px;height:24px}
+  .bar{height:7px;background:#090b13;border:1px solid #000;position:relative;overflow:hidden}
   .fill{height:100%;width:0%}
   #hpFill{background:#e74f62}
   #xpFill{background:#59bde6}
-  .labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+  .labels{display:flex;justify-content:space-between;font-size:8px;line-height:9px;margin-bottom:1px;font-weight:900}
 
   #eventHud{
     position:absolute;
@@ -417,47 +417,60 @@
 
   #weapons{
     position:absolute;
-    left:14px;
-    right:14px;
-    bottom:58px;
-    min-height:30px;
+    left:50%;
+    top:57px;
+    transform:translateX(-50%);
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:5px;
-    padding:4px 8px;
-    font-size:9px;
+    gap:4px;
+    padding:2px 4px;
+    max-width:480px;
     white-space:nowrap;
-    overflow:hidden;
-    background:rgba(7,10,19,.80);
-    border:1px solid rgba(115,130,180,.35);
-    border-radius:5px;
-    box-shadow:0 2px 0 rgba(0,0,0,.55);
-    z-index:2;
+    z-index:5;
+    pointer-events:none;
   }
-  #weapons:before{
-    content:"MEJORAS";
-    color:#7f8bad;
-    font-size:8px;
-    letter-spacing:1.3px;
-    font-weight:1000;
-    margin-right:3px;
-    flex:0 0 auto;
-  }
+  #weapons:before{content:none}
   #weapons .slot{
-    background:rgba(25,30,50,.90);
-    border-left:3px solid #515e92;
-    padding:3px 5px;
-    border-radius:3px;
-    box-shadow:0 1px 0 #000;
-    flex:0 0 auto;
+    min-width:29px;
+    height:27px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    padding:2px 4px;
+    background:rgba(9,12,24,.82);
+    border:1px solid rgba(120,136,185,.48);
+    border-bottom:2px solid rgba(0,0,0,.75);
+    border-radius:4px;
+    font-size:15px;
+    line-height:1;
+    box-shadow:0 1px 4px rgba(0,0,0,.35);
+  }
+  #weapons .slot .skillCount{
+    font-size:8px;
+    color:#e4e8f7;
+    font-weight:1000;
+    align-self:flex-end;
+    margin-bottom:2px;
   }
   .hudControls{display:flex;gap:6px;align-items:flex-start;pointer-events:auto}
   .hudExitBtn{pointer-events:auto;align-self:flex-start;background:rgba(41,48,79,.88);font-size:10px;letter-spacing:.5px;padding:6px 9px;border:1px solid #66739d;border-bottom:3px solid #13182b;opacity:.92}
   .hudExitBtn:hover{opacity:1}
   .slot{background:rgba(9,12,24,.72);border-left:3px solid #515e92;padding:3px 6px}
   #toast{position:absolute;left:50%;top:18%;transform:translateX(-50%);z-index:10;font-size:30px;font-weight:1000;text-align:center;text-shadow:3px 3px 0 #000;pointer-events:none;opacity:0}
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .cards.statMode .card{min-height:165px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .cards.statMode .card h3{margin:4px 0 6px;font-size:20px}
+  .cards.statMode .card p{margin:0;font-size:13px}
+  .cards.statMode .statIcon{font-size:34px;line-height:1;margin-bottom:5px}
+  .cards.statMode .statCount{position:absolute;right:8px;top:8px;font-size:11px;font-weight:1000;color:#d9dff1;background:#11162a;padding:3px 6px;border-radius:4px}
+  .cards.fusionMode{grid-template-columns:repeat(3,minmax(0,1fr));max-height:470px;overflow:auto;padding:2px}
+  .cards.fusionMode .card{min-height:188px;text-align:center;background:linear-gradient(180deg,#2c2346,#191c31);border-color:#ffd45a;box-shadow:0 0 16px rgba(255,212,90,.16),inset 0 0 0 1px rgba(197,126,255,.55)}
+  .cards.fusionMode .fusionIcon{font-size:36px;line-height:1;margin:4px 0 7px;text-shadow:0 0 12px rgba(255,220,110,.42)}
+  .cards.fusionMode .fusionParts{font-size:10px;color:#b8c0df;letter-spacing:.5px;text-transform:uppercase}
+  .cards.fusionMode .fusionTag{display:inline-block;font-size:9px;font-weight:1000;letter-spacing:1.2px;color:#16101c;background:#ffd45a;padding:3px 6px;border-radius:3px}
+
   .card{min-height:205px;text-align:left;background:#222944;border:3px solid #47537c;padding:16px;border-radius:8px;position:relative}
   .card h3{font-size:21px;margin:8px 0 8px}
   .card p{font-size:14px;line-height:1.35;color:#d0d6ef;margin-bottom:0}
@@ -634,7 +647,7 @@
 "use strict";
 
 /* ==========================================================
-   HORDA: PRETÉRITO
+   HORDA: PRETÉRITO · FUSIONES
    Un solo archivo HTML. Sin librerías ni recursos externos.
    ========================================================== */
 
@@ -711,6 +724,10 @@ function sfx(name){
     tone(210,.08,"sawtooth",.032);
     setTimeout(()=>tone(145,.15,"sawtooth",.040),55);
   }
+  if(name==="enemyshot"){
+    tone(310,.045,"square",.020);
+    setTimeout(()=>tone(205,.055,"square",.014),28);
+  }
   if(name==="boss"){
     tone(74,.22,"sawtooth",.045);
     setTimeout(()=>tone(55,.28,"square",.030),120);
@@ -732,6 +749,13 @@ function sfx(name){
     setTimeout(()=>tone(780,.05,"square",.034),45);
     setTimeout(()=>tone(1040,.06,"square",.036),90);
     setTimeout(()=>tone(1320,.14,"square",.040),150);
+  }
+  if(name==="fusion"){
+    tone(196,.10,"sawtooth",.035);
+    setTimeout(()=>tone(294,.10,"square",.038),70);
+    setTimeout(()=>tone(392,.12,"square",.042),145);
+    setTimeout(()=>tone(587,.14,"square",.044),230);
+    setTimeout(()=>tone(784,.22,"square",.047),330);
   }
 }
 
@@ -801,14 +825,15 @@ function makeMusicBuffer(){
 
   // Eight-bar hook. Variations transpose or alter the ending instead of climbing into a shrill octave.
   const hook=[
-    [64,67,71,69,67,64,null,62],
-    [64,67,69,67,64,62,60,null],
-    [62,67,71,69,67,66,62,null],
-    [62,66,69,67,66,62,null,null],
-    [64,67,71,74,71,69,67,64],
-    [64,67,69,72,69,67,64,62],
-    [60,64,69,67,64,60,59,null],
-    [59,63,66,71,69,66,63,null]
+    // Same melodic identity, but with breath and a stronger "long note + grouped notes" rhythm.
+    [64,null,67,71,69,null,67,64],
+    [64,null,67,69,67,null,64,62],
+    [62,null,67,71,69,null,67,62],
+    [62,66,69,null,62,66,69,null],
+    [64,null,67,71,74,null,71,69],
+    [64,67,69,null,72,69,67,null],
+    [60,null,64,69,67,null,64,60],
+    [59,63,66,null,59,63,66,null]
   ];
   const bridge=[
     [64,null,64,67,66,null,62,64],
@@ -845,13 +870,17 @@ function makeMusicBuffer(){
       }
     }
 
-    // Melody: octave 4 to low octave 5, with rests for breathing room.
+    // Melody: preserve the hook, but avoid eight equally retriggered attacks in a row.
+    // Notes followed by a rest are held longer; grouped notes use a softer, shorter attack.
     const phrase=(section===2?bridge:hook)[bar%8];
     for(let e=0;e<8;e++){
       let n=phrase[e];
       if(n!=null){
         if(section===3 && (e===2||e===6))n+=3; // energetic return, still restrained
-        addTone(t0+e*MUSIC_BEAT/2,MUSIC_BEAT*.38,n,.047,"pulse",.375);
+        const followedByRest=(e===7||phrase[e+1]==null);
+        const dur=followedByRest?MUSIC_BEAT*.68:MUSIC_BEAT*.31;
+        const vol=followedByRest?.046:.041;
+        addTone(t0+e*MUSIC_BEAT/2,dur,n,vol,"pulse",.375);
       }
     }
 
@@ -1080,11 +1109,13 @@ function newGame(){
     completion:false,boss8Alive:false,beatBoss4:false,beatBoss8:false,lastBossMinute:0,nextEndlessBoss:570,
     noHitTime:0,dominance:0,directorAcc:0,killTimes:[],surgeTime:0,surgeCooldown:0,
     directorSignals:{noHit:false,healthy:false,clearingFast:false,screenControlled:false},
-    eventType:null,eventTime:0,eventSpawnAcc:0,eventSpawned:0,nextEventMinute:2,lastEventMinute:-10,dryEventMinutes:0,
+    eventType:null,eventTime:0,eventSpawnAcc:0,eventSpawned:0,eventPulseAcc:0,nextEventMinute:2,lastEventMinute:-10,dryEventMinutes:0,
     eliteCount:0,bossCount:0,gigaSpawned:false,
     progressSaveAcc:0,progressSavedScore:0,progressSavedCorrect:0,progressSavedQuestions:0,progressRunCounted:false,runTotalsCommitted:false,
     shake:0,flash:0,spawnAcc:0,eliteAcc:0,threatAcc:0,formationAcc:0,nextFormation:30,
     particles:[],texts:[],enemies:[],gems:[],projectiles:[],enemyProjectiles:[],hazards:[],spawnWarnings:[],effects:[],
+    projectileSoundCd:0,auraTextCd:0,lateStage:0,
+    fusionUsed:false,fusion:null,fusionCd:0,fusionAuxCd:0,fusionOvercharge:0,fusionZones:[],
     pendingReward:null,pendingCard:null,rewardIsChest:false,
     player:(()=>{
       const hero=CHARACTERS[selectedCharId]||CHARACTERS.brasa;
@@ -1160,54 +1191,54 @@ function toggleFullscreen(){
 
 const RANDOM_EVENTS={
   bats:{
-    name:"PLAGA DE MURCIÉLAGOS",detail:"Solo murciélagos nuevos · muchos y rápidos · +20% EXP",
-    color:"#aa78e8",duration:14,minMinute:2,weight:18,
-    forceType:"bat",spawn:1.85,hp:.72,speed:1.12,dmg:.90,size:.90,xp:1.20,score:1.15
+    name:"PLAGA DE MURCIÉLAGOS",detail:"Nube enorme de murciélagos veloces · +30% EXP",
+    color:"#aa78e8",duration:17,minMinute:2,weight:15,
+    forceType:"bat",spawn:2.35,hp:.78,speed:1.24,dmg:1.05,size:.92,xp:1.30,score:1.20
   },
   frenzy:{
-    name:"FRENESÍ",detail:"Enemigos frágiles pero muy rápidos · +20% puntos",
-    color:"#ef835d",duration:14,minMinute:3,weight:16,
-    spawn:1.65,hp:.68,speed:1.28,dmg:.92,size:.88,xp:1.12,score:1.20
+    name:"FRENESÍ",detail:"La horda acelera brutalmente · +30% puntos",
+    color:"#ef835d",duration:17,minMinute:3,weight:15,
+    spawn:2.05,hp:.76,speed:1.38,dmg:1.14,size:.92,xp:1.15,score:1.30
   },
   colossi:{
-    name:"COLOSOS",detail:"Pocos enemigos gigantes y resistentes · +45% puntos y EXP",
-    color:"#d49a63",duration:15,minMinute:4,weight:13,
-    spawn:.58,hp:2.15,speed:.72,dmg:1.28,size:1.42,xp:1.45,score:1.45
+    name:"COLOSOS",detail:"Pocos enemigos enormes, muy resistentes y peligrosos · +60% recompensas",
+    color:"#d49a63",duration:18,minMinute:4,weight:12,
+    spawn:.70,hp:2.80,speed:.80,dmg:1.50,size:1.55,xp:1.60,score:1.60
   },
   arcane:{
-    name:"SOBRECARGA ARCANA",detail:"Más enemigos, ataques más rápidos · +35% EXP",
-    color:"#70c9ee",duration:15,minMinute:3,weight:14,
-    spawn:1.35,hp:1.0,speed:1.06,dmg:1.0,size:1.0,xp:1.35,score:1.12,playerHaste:.12
+    name:"SOBRECARGA ARCANA",detail:"Más enemigos + zonas mágicas aparecen bajo tus pies · +40% EXP",
+    color:"#70c9ee",duration:17,minMinute:3,weight:13,
+    spawn:1.55,hp:1.08,speed:1.10,dmg:1.15,size:1.0,xp:1.40,score:1.20,playerHaste:.10,pulse:"hazard"
   },
   blood:{
-    name:"PACTO DE SANGRE",detail:"Golpean más fuerte · las bajas curan · +30% puntos",
-    color:"#ed6672",duration:14,minMinute:4,weight:11,
-    spawn:1.28,hp:1.08,speed:1.05,dmg:1.25,size:1.0,xp:1.18,score:1.30,healOnKill:.75
+    name:"PACTO DE SANGRE",detail:"La horda golpea mucho más fuerte · las bajas curan un poco · +40% puntos",
+    color:"#ed6672",duration:17,minMinute:4,weight:11,
+    spawn:1.48,hp:1.18,speed:1.08,dmg:1.48,size:1.0,xp:1.20,score:1.40,healOnKill:.55
   },
   imps:{
-    name:"INVASIÓN DE DIABLILLOS",detail:"Solo diablillos nuevos · veloces · +20% puntos y EXP",
-    color:"#e66a58",duration:13,minMinute:5,weight:10,
-    forceType:"imp",spawn:1.48,hp:.86,speed:1.15,dmg:1.0,size:.95,xp:1.20,score:1.20
+    name:"INVASIÓN DE DIABLILLOS",detail:"Solo diablillos: muy rápidos, densos y agresivos · +30% recompensas",
+    color:"#e66a58",duration:16,minMinute:5,weight:10,
+    forceType:"imp",spawn:1.95,hp:.92,speed:1.28,dmg:1.20,size:.98,xp:1.30,score:1.30
   },
   bones:{
-    name:"MARCHA DE HUESOS",detail:"Solo esqueletos nuevos · densos y resistentes · +25% EXP",
-    color:"#d7d1b9",duration:14,minMinute:3,weight:10,
-    forceType:"skeleton",spawn:1.35,hp:1.22,speed:.88,dmg:1.08,size:1.08,xp:1.25,score:1.18
+    name:"MARCHA DE HUESOS",detail:"Esqueletos densos y resistentes cierran el espacio · +35% EXP",
+    color:"#d7d1b9",duration:17,minMinute:3,weight:10,
+    forceType:"skeleton",spawn:1.65,hp:1.50,speed:.94,dmg:1.25,size:1.10,xp:1.35,score:1.25
   },
   mana:{
-    name:"FIEBRE DE EXP",detail:"Más enemigos · las gemas valen mucho más · +75% EXP",
-    color:"#62d5ef",duration:13,minMinute:2,weight:10,
-    spawn:1.24,hp:.92,speed:1.05,dmg:1.0,size:1.0,xp:1.75,score:1.08
+    name:"LLUVIA ARCANA",detail:"Proyectiles cruzan la arena mientras la horda presiona · +55% EXP",
+    color:"#62d5ef",duration:17,minMinute:4,weight:12,
+    spawn:1.42,hp:1.04,speed:1.10,dmg:1.16,size:1.0,xp:1.55,score:1.30,pulse:"projectiles"
   },
   elites:{
-    name:"CACERÍA ÉLITE",detail:"Solo aparecen élites · +45% puntos y EXP",
-    color:"#c47aff",duration:12,minMinute:4,weight:9,
-    mode:"elite",interval:2.15,maxAlive:7,hp:.82,speed:.96,dmg:.92,size:.94,xp:1.45,score:1.45
+    name:"CACERÍA ÉLITE",detail:"Solo élites. No hay enemigos fáciles · +55% recompensas",
+    color:"#c47aff",duration:16,minMinute:4,weight:10,
+    mode:"elite",interval:1.55,maxAlive:9,hp:1.05,speed:1.06,dmg:1.16,size:1.02,xp:1.55,score:1.55
   },
   bosses:{
-    name:"CONSEJO DE JEFES",detail:"Solo jefes · sobrevive a la reunión · +50% puntos y EXP",
-    color:"#ffd15c",duration:14,minMinute:8,weight:7,
-    mode:"boss",interval:4.35,maxAlive:4,maxTotal:4,hp:.72,speed:.94,dmg:.90,size:.92,xp:1.50,score:1.50
+    name:"CONSEJO DE JEFES",detail:"Solo jefes. Aguanta una prueba real de tu build · +70% recompensas",
+    color:"#ffd15c",duration:17,minMinute:8,weight:9,
+    mode:"boss",interval:3.60,maxAlive:5,maxTotal:5,hp:1.0,speed:1.0,dmg:1.15,size:1.0,xp:1.70,score:1.70
   }
 };
 
@@ -1238,13 +1269,13 @@ function clearArenaForSpecialEvent(){
 }
 function startRandomEvent(key,minute){
   const e=RANDOM_EVENTS[key];if(!e)return;
-  G.eventType=key;G.eventTime=e.duration;G.eventSpawnAcc=99;G.eventSpawned=0;
+  G.eventType=key;G.eventTime=e.duration;G.eventSpawnAcc=99;G.eventSpawned=0;G.eventPulseAcc=0;
   G.lastEventMinute=minute;G.dryEventMinutes=0;
 
   // Do not stack an event with an endless boss immediately afterward.
   if(G.time>=480)G.nextEndlessBoss=Math.max(G.nextEndlessBoss,G.time+e.duration+24);
 
-  if(e.mode==="elite"||e.mode==="boss")clearArenaForSpecialEvent();
+  if(e.mode==="elite"||(e.mode==="boss"&&G.time<900))clearArenaForSpecialEvent();
 
   if(e.mode==="boss"){sfx("boss");G.shake=13}
   else {sfx("level");G.shake=5}
@@ -1253,17 +1284,24 @@ function startRandomEvent(key,minute){
 function tryRandomEvent(minute){
   if(minute<2||G.eventTime>0||G.surgeTime>0)return;
 
-  // Preserve the designed 2/4/6/8-minute boss fights and never start over an existing boss.
+  // Preserve the designed 2/4/6/8-minute boss beats.
   if(minute<=8 && minute%2===0)return;
-  if(G.enemies.some(e=>!e.dead&&(e.type==="boss"||e.type==="giga")))return;
+  if(G.enemies.some(e=>!e.dead&&e.type==="giga"))return;
+  if(G.enemies.some(e=>!e.dead&&e.type==="boss")&&minute<8)return;
 
-  let chance=minute<4?.14:minute<8?.18:.23;
-  // A mild pity increase after a long dry spell, still capped as a small chance.
-  chance=Math.min(.30,chance+Math.max(0,G.dryEventMinutes-3)*.025);
+  let chance=minute<4?.20:minute<8?.27:minute<12?.36:minute<15?.44:.50;
+  chance=Math.min(.58,chance+Math.max(0,G.dryEventMinutes-2)*.04);
   if(Math.random()>chance){G.dryEventMinutes++;return}
 
   const eligible=Object.entries(RANDOM_EVENTS)
-    .filter(([k,e])=>minute>=e.minMinute && !(k==="bosses"&&minute<8))
+    .filter(([k,e])=>{
+      if(minute<e.minMinute)return false;
+      if(k==="bosses"&&minute<8)return false;
+      // Once the endgame replaces small enemies, events must respect that progression.
+      if(minute>=10&&e.forceType)return false;
+      if(minute>=15&&e.mode==="elite")return false;
+      return true;
+    })
     .map(([key,e])=>({key,...e}));
   if(!eligible.length)return;
 
@@ -1274,10 +1312,30 @@ function updateRandomEvents(dt){
   if(!G)return;
 
   if(G.eventTime>0){
+    const ev=currentEvent();
     G.eventTime=Math.max(0,G.eventTime-dt);
+    G.eventPulseAcc+=dt;
+
+    if(ev?.pulse==="hazard"&&G.eventPulseAcc>=2.6){
+      G.eventPulseAcc=0;
+      const aim=predictedPlayer(.55);
+      addHazard(aim.x+rand(-48,48),aim.y+rand(-42,42),48,.72,1.75,11,"#5f8fc8");
+      if(G.time>=480)addHazard(aim.x+rand(-90,90),aim.y+rand(-70,70),40,.82,1.55,9,"#4e6fb2");
+    }else if(ev?.pulse==="projectiles"&&G.eventPulseAcc>=2.35){
+      G.eventPulseAcc=0;
+      const side=(Math.random()*4)|0,margin=18;
+      let x,y;
+      if(side===0){x=rand(70,W-70);y=margin}
+      else if(side===1){x=W-margin;y=rand(70,H-70)}
+      else if(side===2){x=rand(70,W-70);y=H-38}
+      else{x=margin;y=rand(70,H-70)}
+      const aim=predictedPlayer(.45),base=Math.atan2(aim.y-y,aim.x-x);
+      for(let i=-2;i<=2;i++)addEnemyProjectile(x,y,base+i*.16,142,9+Math.min(7,G.time/120),{r:6,color:"#65d8ff"});
+    }
+
     if(G.eventTime===0){
       const ended=RANDOM_EVENTS[G.eventType];
-      G.eventType=null;G.eventSpawnAcc=0;G.eventSpawned=0;
+      G.eventType=null;G.eventSpawnAcc=0;G.eventSpawned=0;G.eventPulseAcc=0;
       if(ended)showToast(ended.name+" · COMPLETADO","#9fe8b3",1100);
     }
   }
@@ -1437,6 +1495,7 @@ function dealPlayerDamage(amount,source=null){
   return true;
 }
 function addEnemyProjectile(x,y,angle,speed,damage,opts={}){
+  if((G.projectileSoundCd||0)<=0){sfx("enemyshot");G.projectileSoundCd=.085}
   G.enemyProjectiles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:opts.r||5,damage,
     life:opts.life||4.5,color:opts.color||"#ff796d",dead:false,spin:0});
 }
@@ -1452,10 +1511,10 @@ function radialEnemyShots(e,count=8,speed=108,damage=10,color="#f0a45e"){
   for(let i=0;i<count;i++)addEnemyProjectile(e.x,e.y,off+i*Math.PI*2/count,speed,damage,{r:5,color});
 }
 function addHazard(x,y,r=52,warn=.9,active=1.7,damage=12,color="#bb5a78"){
-  G.hazards.push({x:clamp(x,r+6,W-r-6),y:clamp(y,r+6,H-112-r),r,warn,active,age:0,damage,color,hitCd:0});
+  G.hazards.push({x:clamp(x,r+6,W-r-6),y:clamp(y,r+6,H-40-r),r,warn,active,age:0,damage,color,hitCd:0});
 }
 function addSpawnWarning(x,y,type="slime",delay=.95){
-  G.spawnWarnings.push({x:clamp(x,18,W-18),y:clamp(y,18,H-110),type,time:delay,maxTime:delay,dead:false});
+  G.spawnWarnings.push({x:clamp(x,18,W-18),y:clamp(y,18,H-38),type,time:delay,maxTime:delay,dead:false});
 }
 function startCharge(e,windup=.68,chargeSpeed=225,duration=.52,cooldown=3.0,predict=.40){
   const aim=predictedPlayer(predict),a=Math.atan2(aim.y-e.y,aim.x-e.x);
@@ -1513,7 +1572,11 @@ function updateEliteAbilities(e,dt){
   if(mods.includes("summon")){
     e.summonCd=(e.summonCd||0)-dt;
     if(e.summonCd<=0&&G.enemies.length<95){
-      for(let i=0;i<2;i++)spawnEnemy(pick(["bat","slime","imp"]),false,{x:e.x+rand(-28,28),y:e.y+rand(-28,28)});
+      if(G.time>=720){
+        const aim=predictedPlayer(.4);addHazard(aim.x,aim.y,44,.75,1.55,10,"#925bc0");
+      }else{
+        for(let i=0;i<2;i++)spawnEnemy(pick(["bat","slime","imp"]),false,{x:e.x+rand(-28,28),y:e.y+rand(-28,28)});
+      }
       e.summonCd=6.2;
     }
   }
@@ -1555,8 +1618,13 @@ function updateBossAI(e,dt){
 
   e.summonCd=(e.summonCd||0)-dt;
   if(!e.eventBoss&&(isGiga||minute>=6)&&e.summonCd<=0&&G.enemies.length<90){
-    const n=isGiga?(phase===3?3:2):2;
-    for(let i=0;i<n;i++)spawnEnemy(isGiga&&phase===3&&i===0?"elite":pick(["bat","skeleton","imp"]),false,{x:e.x+rand(-55,55),y:e.y+rand(-55,55)});
+    if(G.time<720){
+      const n=isGiga?(phase===3?3:2):2;
+      for(let i=0;i<n;i++)spawnEnemy(isGiga&&phase===3&&i===0?"elite":pick(["bat","skeleton","imp"]),false,{x:e.x+rand(-55,55),y:e.y+rand(-55,55)});
+    }else if(G.time<900){
+      spawnEnemy("elite",false,{x:e.x+rand(-55,55),y:e.y+rand(-55,55)});
+    }
+    // At 15+ minutes, bosses stop summoning lesser enemies. Their own attacks carry the challenge.
     e.summonCd=isGiga?(phase===3?6.2:8.0):6.8;
   }
 
@@ -1647,7 +1715,7 @@ function specialUnlockedTypes(){
   return arr;
 }
 function updateThreatDirector(dt){
-  if(G.time<120||G.eventTime>0)return;
+  if(G.time<120||G.time>=720||G.eventTime>0)return;
   // During the designed early boss fights, let the boss mechanics carry the challenge.
   const designedBoss=G.enemies.some(e=>!e.dead&&e.type==="boss"&&e.bossMinute<=8);
   if(designedBoss&&G.time<500)return;
@@ -1685,13 +1753,13 @@ function scheduleFormation(){
     showToast("FORMACIÓN · BARRIDO", "#96b9ff",850);
   }else{
     let mx=p.moveX||0,my=p.moveY||-1;if(Math.abs(mx)+Math.abs(my)<.1){const a=rand(0,Math.PI*2);mx=Math.cos(a);my=Math.sin(a)}
-    const cx=clamp(p.x+mx*165,75,W-75),cy=clamp(p.y+my*140,75,H-175),px=-my,py=mx;
+    const cx=clamp(p.x+mx*165,75,W-75),cy=clamp(p.y+my*140,75,H-92),px=-my,py=mx;
     for(let i=-3;i<=3;i++)addSpawnWarning(cx+px*i*34,cy+py*i*34,pick(types),delay);
     showToast("FORMACIÓN · INTERCEPCIÓN", "#96b9ff",850);
   }
 }
 function updateFormations(dt){
-  if(G.time<150||G.eventTime>0)return;
+  if(G.time<150||G.time>=720||G.eventTime>0)return;
   G.formationAcc+=dt;
   if(G.formationAcc<G.nextFormation)return;
   const bossAlive=G.enemies.some(e=>!e.dead&&(e.type==="boss"||e.type==="giga"));
@@ -1712,8 +1780,36 @@ function drawTacticalWarnings(){
   }
 }
 function drawEnemyProjectiles(){
-  for(const q of G.enemyProjectiles){ctx.save();ctx.translate(Math.round(q.x),Math.round(q.y));ctx.rotate(q.spin);ctx.fillStyle=q.color;ctx.fillRect(-q.r,-q.r,q.r*2,q.r*2);ctx.fillStyle="#ffe6bd";ctx.fillRect(-2,-2,4,4);ctx.restore()}
+  for(const q of G.enemyProjectiles){
+    ctx.save();ctx.translate(Math.round(q.x),Math.round(q.y));ctx.rotate(q.spin);
+    const pulse=1+.14*Math.sin(G.time*18+q.x*.03);
+    ctx.globalAlpha=.20;ctx.fillStyle=q.color;ctx.beginPath();ctx.arc(0,0,(q.r+7)*pulse,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.55;ctx.strokeStyle=q.color;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,q.r+4,0,Math.PI*2);ctx.stroke();
+    ctx.globalAlpha=1;ctx.shadowColor=q.color;ctx.shadowBlur=12;
+    ctx.fillStyle=q.color;ctx.fillRect(-q.r,-q.r,q.r*2,q.r*2);
+    ctx.shadowBlur=0;ctx.fillStyle="#fff7d6";ctx.fillRect(-2,-2,4,4);
+    ctx.restore();
+  }
 }
+function chooseDefaultEnemyType(){
+  const t=G.time;
+  if(t<120)return pick(["bat","slime"]);
+  if(t<300)return pick(["bat","slime","skeleton"]);
+  if(t<480)return pick(["bat","slime","skeleton","imp"]);
+
+  const specials=specialUnlockedTypes();
+  if(t<540){ // 8–9 min: small enemies begin disappearing
+    return Math.random()<.30?pick(["skeleton","imp"]):pick(specials);
+  }
+  if(t<600){ // 9–10 min: almost entirely tactical enemies
+    return Math.random()<.12?"imp":pick(specials);
+  }
+  if(t<720){ // 10–12 min: no basic fodder
+    return pick(specials);
+  }
+  return "elite";
+}
+
 function spawnEnemy(type=null,forcedBoss=false,spawnPos=null,opts={}){
   const d=difficulty(),dir=directorModifiers(),ev=eventModifiers();
   let x,y,margin=35;
@@ -1725,7 +1821,7 @@ function spawnEnemy(type=null,forcedBoss=false,spawnPos=null,opts={}){
     if(side===2){x=rand(-margin,W+margin);y=H+margin}
     if(side===3){x=-margin;y=rand(-margin,H+margin)}
   }
-  let t=type||(ev.forceType||pick(G.time<120?["bat","slime"]:G.time<300?["bat","slime","skeleton"]:["bat","slime","skeleton","imp"]));
+  let t=type||(ev.forceType||chooseDefaultEnemyType());
   const defs={
     bat:{hp:18,speed:54,r:8,dmg:8,xp:3,score:12},
     slime:{hp:34,speed:34,r:11,dmg:10,xp:4,score:14},
@@ -1744,9 +1840,20 @@ function spawnEnemy(type=null,forcedBoss=false,spawnPos=null,opts={}){
   if(t==="giga"){
     G.bossCount++;z.hp*=Math.max(1,d*.85);
   }else if(t==="boss"){
-    G.bossCount++;z.hp*=Math.max(1,d*.72);z.speed+=Math.min(24,d*2.1);z.r=Math.min(44,27+2.45*Math.sqrt(Math.max(0,G.bossCount-1)));
+    G.bossCount++;z.hp*=Math.max(1,d*.72);z.speed+=Math.min(24,d*2.1);z.r=Math.min(48,27+2.45*Math.sqrt(Math.max(0,G.bossCount-1)));
+    if(G.time>=900){
+      const late=Math.max(0,G.time-900);
+      const hpMult=Math.min(4.8,1.75+late/180*.70);
+      const dmgMult=Math.min(2.65,1.38+late/240*.42);
+      z.hp*=hpMult;z.dmg*=dmgMult;z.speed*=Math.min(1.22,1.05+late/1200);
+      z.xp*=1.6;z.score*=1.8;
+    }
   }else if(t==="elite"){
-    G.eliteCount++;z.hp*=Math.max(1,d*.58);z.speed+=Math.min(23,d*1.65);z.r=Math.min(26,16+1.65*Math.sqrt(Math.max(0,G.eliteCount-1)));
+    G.eliteCount++;z.hp*=Math.max(1,d*.58);z.speed+=Math.min(23,d*1.65);z.r=Math.min(29,16+1.65*Math.sqrt(Math.max(0,G.eliteCount-1)));
+    if(G.time>=720){
+      const late=Math.max(0,G.time-720);
+      z.hp*=Math.min(2.15,1.15+late/360*.45);z.dmg*=Math.min(1.75,1.08+late/420*.30);
+    }
   }else if(SPECIAL_ENEMIES.has(t)){
     z.hp*=Math.max(1,d*.28);z.speed+=Math.min(20,d*1.0);
   }else{
@@ -1805,7 +1912,7 @@ function killEnemy(e){
     const heal=ev.healOnKill*(e.type==="boss"?6:e.type==="elite"?2.5:1);
     G.player.hp=Math.min(G.player.maxHp,G.player.hp+heal);
   }
-  if(e.type==="elite"&&e.eliteMods?.includes("split")&&currentEvent()?.mode!=="elite"&&G.enemies.length<90){
+  if(G.time<720&&e.type==="elite"&&e.eliteMods?.includes("split")&&currentEvent()?.mode!=="elite"&&G.enemies.length<90){
     for(let i=0;i<3;i++)spawnEnemy(pick(["bat","slime","imp"]),false,{x:e.x+rand(-30,30),y:e.y+rand(-30,30)});
   }
   const isBigBoss=e.type==="boss"||e.type==="giga";
@@ -1851,6 +1958,245 @@ function weaponPower(id){
 function hitRoll(base,p){
   let crit=Math.random()<p.crit;
   return {dmg:base*p.might*(crit?1.85:1),crit};
+}
+
+function fusionExplosion(x,y,r,baseDamage,color="#ffd45a"){
+  const fp=fusionPower(),damage=baseDamage*fp.might*fp.over;
+  for(const e of G.enemies){
+    if(e.dead)continue;
+    const d=Math.hypot(e.x-x,e.y-y);
+    if(d<r+e.r){
+      // Splash stays strong against bosses without multiplying out of control.
+      const bossScale=(e.type==="boss"||e.type==="giga")?.72:1;
+      damageEnemy(e,damage*bossScale,false);
+    }
+  }
+  G.effects.push({type:"fusionNova",x,y,r,color,life:.34,maxLife:.34});
+  particle(x,y,color,8);
+}
+function fusionChainFrom(x,y,baseDamage,jumps=4,range=145,color="#8eeaff",startEnemy=null){
+  const fp=fusionPower(),used=startEnemy?[startEnemy]:[],damage=baseDamage*fp.might*fp.over;
+  let from={x,y},cur=nearestEnemy(x,y,range,used);
+  for(let i=0;i<jumps&&cur;i++){
+    damageEnemy(cur,damage,false);
+    G.effects.push({type:"line",x1:from.x,y1:from.y,x2:cur.x,y2:cur.y,life:.14,color});
+    used.push(cur);from=cur;cur=nearestEnemy(from.x,from.y,range,used);
+  }
+}
+function addFusionZone(x,y,r=42,life=2.2,baseDamage=12,color="#8bdc67"){
+  G.fusionZones.push({x:clamp(x,r,W-r),y:clamp(y,r,H-38-r),r,life,maxLife:life,damage:baseDamage,tick:.05,color});
+}
+function updateFusionZones(dt){
+  for(const z of G.fusionZones){
+    z.life-=dt;z.tick-=dt;
+    if(z.tick<=0){
+      z.tick=.32;
+      const fp=fusionPower(),damage=z.damage*fp.might*fp.over;
+      for(const e of G.enemies){
+        if(!e.dead&&Math.hypot(e.x-z.x,e.y-z.y)<z.r+e.r)damageEnemy(e,damage,false);
+      }
+    }
+  }
+  G.fusionZones=G.fusionZones.filter(z=>z.life>0);
+}
+function drawFusionZones(){
+  for(const z of G.fusionZones){
+    const a=Math.max(0,z.life/z.maxLife),pulse=.92+.08*Math.sin(G.time*10+z.x*.02);
+    ctx.save();
+    ctx.globalAlpha=.10*a;ctx.fillStyle=z.color;ctx.beginPath();ctx.arc(z.x,z.y,z.r*pulse,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.45*a;ctx.strokeStyle=z.color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(z.x,z.y,z.r*pulse,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+}
+function spawnFusionProjectile(kind,angle,opts={}){
+  const p=G.player,fp=fusionPower(),speed=opts.speed||235;
+  const type=opts.type||"missile";
+  G.projectiles.push({
+    type,x:opts.x??p.x,y:opts.y??p.y,
+    vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+    r:(opts.r||6)*fp.size,life:opts.life||2.7,age:0,
+    damage:(opts.damage||34)*fp.might*fp.over,pierce:opts.pierce??1,
+    crit:Math.min(.70,((weaponPower(G.fusion.a)?.crit||.05)+(weaponPower(G.fusion.b)?.crit||.05))/2),
+    homing:!!opts.homing,hitSet:type==="boom"?new Set():undefined,
+    fusionKind:kind,fusionReturning:!!opts.returning,fusionTrail:!!opts.trail,
+    spin:0,glow:opts.glow||FUSIONS[G.fusion.key].color
+  });
+}
+function onFusionProjectileHit(pr,e){
+  if(!G.fusion||!pr)return;
+  const key=G.fusion.key,now=G.time;
+  if(pr.lastFusionProc&&now-pr.lastFusionProc<.12)return;
+
+  if(key==="axe_chain"&&pr.type==="axe"){
+    pr.lastFusionProc=now;fusionChainFrom(e.x,e.y,18,3,140,"#f7e36f",e);
+  }else if(key==="axe_fire"&&pr.type==="axe"){
+    pr.lastFusionProc=now;fusionExplosion(e.x,e.y,42,22,"#ff8a43");addFusionZone(e.x,e.y,27,1.25,7,"#ff793d");
+  }else if(key==="axe_poison"&&pr.type==="axe"){
+    e.fusionPoisonUntil=Math.max(e.fusionPoisonUntil||0,G.time+4);
+    const hp=e.hp/Math.max(1,e.maxHp);
+    if(hp<.20){
+      const extra=(e.type==="boss"||e.type==="giga")?Math.min(e.maxHp*.025,55*fusionPower().might):e.maxHp*.20;
+      damageEnemy(e,extra*fusionPower().over,false);
+      G.effects.push({type:"fusionNova",x:e.x,y:e.y,r:24,color:"#9be85f",life:.24,maxLife:.24});
+    }
+  }else if(key==="boom_chain"&&pr.type==="boom"){
+    pr.lastFusionProc=now;fusionChainFrom(e.x,e.y,16,4,150,"#77e5ff",e);
+  }else if(key==="boom_fire"&&pr.type==="boom"){
+    pr.lastFusionProc=now;fusionExplosion(e.x,e.y,46,20,"#ff9a4c");
+  }else if(key==="boom_poison"&&pr.type==="boom"){
+    e.fusionPoisonUntil=Math.max(e.fusionPoisonUntil||0,G.time+3.5);
+  }else if(key==="chain_missile"&&pr.type==="missile"){
+    pr.lastFusionProc=now;fusionChainFrom(e.x,e.y,17,4,145,"#75dcff",e);
+  }else if(key==="missile_poison"&&pr.type==="missile"){
+    pr.lastFusionProc=now;addFusionZone(e.x,e.y,38,2.35,9,"#83d86d");
+  }
+
+  if(pr.fusionKind==="comet"){
+    pr.lastFusionProc=now;fusionExplosion(e.x,e.y,48,24,"#ffad62");
+  }else if(pr.fusionKind==="solar"){
+    pr.lastFusionProc=now;fusionExplosion(e.x,e.y,35,18,"#ffd36a");
+  }else if(pr.fusionKind==="thunderaxe"){
+    pr.lastFusionProc=now;fusionChainFrom(e.x,e.y,20,3,145,"#f7e36f",e);
+  }else if(pr.fusionKind==="hellaxe"){
+    pr.lastFusionProc=now;fusionExplosion(e.x,e.y,46,24,"#ff8542");
+  }else if(pr.fusionKind==="plaguemissile"){
+    pr.lastFusionProc=now;addFusionZone(e.x,e.y,42,2.6,10,"#7fd76b");
+  }
+}
+function processFusionProjectile(pr,dt){
+  if(!G.fusion)return;
+  if(pr.fusionReturning&&pr.age>1.0){
+    const a=Math.atan2(G.player.y-pr.y,G.player.x-pr.x),sp=310;
+    pr.vx=lerp(pr.vx,Math.cos(a)*sp,dt*5);
+    pr.vy=lerp(pr.vy,Math.sin(a)*sp,dt*5);
+  }
+  if(pr.fusionTrail){
+    pr.fusionTrailCd=(pr.fusionTrailCd||0)-dt;
+    if(pr.fusionTrailCd<=0){
+      pr.fusionTrailCd=.20;
+      const col=pr.glow||FUSIONS[G.fusion.key].color;
+      addFusionZone(pr.x,pr.y,22,1.35,5,col);
+    }
+  }
+}
+function updateFusion(dt){
+  if(!G.fusion)return;
+  G.fusionOvercharge=Math.max(0,(G.fusionOvercharge||0)-dt);
+  G.fusionCd-=dt;G.fusionAuxCd-=dt;
+  const key=G.fusion.key,p=G.player,fp=fusionPower();
+
+  if(key==="axe_boom"&&G.fusionCd<=0){
+    for(let i=0;i<3;i++)spawnFusionProjectile("steelcyclone",i*Math.PI*2/3,{type:"boom",speed:245,r:11,life:2.7,damage:42,pierce:99,returning:true});
+    G.fusionCd=1.75;
+  }else if(key==="axe_chain"&&G.fusionCd<=0){
+    for(let i=0;i<2;i++){
+      const t=nearestEnemy(p.x,p.y,520),a=t?Math.atan2(t.y-p.y,t.x-p.x)+rand(-.16,.16):rand(0,Math.PI*2);
+      spawnFusionProjectile("thunderaxe",a,{type:"axe",speed:215,r:9,life:2.4,damage:38,pierce:2});
+    }
+    G.fusionCd=1.55;
+  }else if(key==="axe_fire"&&G.fusionCd<=0){
+    for(let i=0;i<2;i++){
+      const a=rand(0,Math.PI*2);
+      spawnFusionProjectile("hellaxe",a,{type:"axe",speed:220,r:10,life:2.25,damage:42,pierce:2,trail:true,glow:"#ff8542"});
+    }
+    G.fusionCd=1.6;
+  }else if(key==="axe_missile"&&G.fusionCd<=0){
+    for(let i=0;i<3;i++)spawnFusionProjectile("arsenal",rand(0,Math.PI*2),{type:"axe",speed:180,r:8,life:3.2,damage:34,pierce:2,homing:true});
+    G.fusionCd=1.4;
+  }else if(key==="axe_orbit"&&G.fusionCd<=0){
+    for(let i=0;i<8;i++)spawnFusionProjectile("warmill",G.player.orbitAngle+i*Math.PI/4,{type:"axe",speed:210,r:8,life:1.55,damage:29,pierce:2});
+    G.effects.push({type:"fusionNova",x:p.x,y:p.y,r:92,color:"#d9d9ef",life:.32,maxLife:.32});
+    G.fusionCd=1.85;
+  }else if(key==="axe_poison"&&G.fusionCd<=0){
+    for(let i=0;i<2;i++){
+      const t=nearestEnemy(p.x,p.y,520),a=t?Math.atan2(t.y-p.y,t.x-p.x)+rand(-.18,.18):rand(0,Math.PI*2);
+      spawnFusionProjectile("toxicaxe",a,{type:"axe",speed:205,r:9,life:2.5,damage:35,pierce:3,glow:"#91df68"});
+    }
+    G.fusionCd=1.5;
+  }else if(key==="boom_missile"&&G.fusionCd<=0){
+    for(let i=0;i<3;i++)spawnFusionProjectile("hunterdisc",rand(0,Math.PI*2),{type:"boom",speed:205,r:9,life:3.0,damage:31,pierce:99,homing:true,returning:true});
+    G.fusionCd=1.55;
+  }else if(key==="boom_orbit"&&G.fusionCd<=0){
+    const n=4,rad=62;
+    for(let i=0;i<n;i++){
+      const a=G.player.orbitAngle+i*Math.PI*2/n,x=p.x+Math.cos(a)*rad,y=p.y+Math.sin(a)*rad;
+      spawnFusionProjectile("orbitdisc",a,{type:"boom",x,y,speed:245,r:9,life:2.5,damage:32,pierce:99,returning:true});
+    }
+    G.fusionCd=1.7;
+  }else if(key==="boom_poison"){
+    // Existing evolved boomerangs paint a poison path. This is intentionally continuous.
+    for(const pr of G.projectiles)if(pr.type==="boom"){pr.fusionTrail=true;pr.glow="#90d85e"}
+    if(G.fusionCd<=0){
+      const t=nearestEnemy(p.x,p.y,500),a=t?Math.atan2(t.y-p.y,t.x-p.x):0;
+      spawnFusionProjectile("plaguereaper",a,{type:"boom",speed:255,r:12,life:2.7,damage:34,pierce:99,returning:true,trail:true,glow:"#90d85e"});
+      G.fusionCd=1.9;
+    }
+  }else if(key==="chain_fire"&&G.fusionCd<=0){
+    let cur=nearestEnemy(p.x,p.y,430),from={x:p.x,y:p.y},used=[];
+    for(let i=0;i<5&&cur;i++){
+      const nx=cur.x,ny=cur.y;
+      damageEnemy(cur,22*fp.might*fp.over,false);
+      G.effects.push({type:"line",x1:from.x,y1:from.y,x2:nx,y2:ny,life:.14,color:"#ffd35f"});
+      fusionExplosion(nx,ny,30,12,"#ff8848");
+      used.push(cur);from={x:nx,y:ny};cur=nearestEnemy(nx,ny,155,used);
+    }
+    G.fusionCd=1.35;
+  }else if(key==="chain_orbit"&&G.fusionCd<=0){
+    const n=4,rad=70,used=[];
+    for(let i=0;i<n;i++){
+      const a=G.player.orbitAngle+i*Math.PI*2/n,x=p.x+Math.cos(a)*rad,y=p.y+Math.sin(a)*rad;
+      const t=nearestEnemy(x,y,180,used);
+      if(t){
+        damageEnemy(t,22*fp.might*fp.over,false);
+        G.effects.push({type:"line",x1:x,y1:y,x2:t.x,y2:t.y,life:.16,color:"#a8efff"});
+        used.push(t);
+      }
+    }
+    G.fusionCd=.78;
+  }else if(key==="chain_poison"&&G.fusionCd<=0){
+    const tagged=G.enemies.filter(e=>!e.dead&&(e.fusionPoisonUntil||0)>G.time).slice(0,10);
+    if(tagged.length){
+      let from={x:p.x,y:p.y};
+      for(const e of tagged){
+        damageEnemy(e,17*fp.might*fp.over,false);
+        G.effects.push({type:"line",x1:from.x,y1:from.y,x2:e.x,y2:e.y,life:.14,color:"#8ee987"});
+        from=e;
+      }
+    }else fusionChainFrom(p.x,p.y,15,4,145,"#8ee987");
+    G.fusionCd=1.0;
+  }else if(key==="fire_missile"&&G.fusionCd<=0){
+    for(let i=0;i<3;i++)spawnFusionProjectile("comet",rand(0,Math.PI*2),{type:"missile",speed:190,r:7,life:3.2,damage:32,pierce:1,homing:true,glow:"#ffad62"});
+    G.fusionCd=1.45;
+  }else if(key==="fire_orbit"&&G.fusionCd<=0){
+    const n=6,rad=56;
+    for(let i=0;i<n;i++){
+      const a=G.player.orbitAngle+i*Math.PI*2/n,x=p.x+Math.cos(a)*rad,y=p.y+Math.sin(a)*rad;
+      spawnFusionProjectile("solar",a,{type:"fire",x,y,speed:240,r:6,life:1.8,damage:27,pierce:1,glow:"#ffd36a"});
+    }
+    G.fusionCd=1.55;
+  }else if(key==="fire_poison"&&G.fusionCd<=0){
+    const wp=weaponPower("poison"),rad=(72+wp.lvl*11)*(wp.evo?1.30:1)*wp.size;
+    fusionExplosion(p.x,p.y,rad,33,"#c7df58");
+    G.effects.push({type:"fusionRing",x:p.x,y:p.y,r:rad,color:"#ff8b42",life:.42,maxLife:.42});
+    G.fusionCd=1.65;
+  }else if(key==="missile_orbit"&&G.fusionCd<=0){
+    const n=4,rad=60;
+    for(let i=0;i<n;i++){
+      const a=G.player.orbitAngle+i*Math.PI*2/n,x=p.x+Math.cos(a)*rad,y=p.y+Math.sin(a)*rad;
+      spawnFusionProjectile("satellite",a,{type:"missile",x,y,speed:175,r:6,life:3.1,damage:30,pierce:2,homing:true,glow:"#b99cff"});
+    }
+    G.fusionCd=1.4;
+  }else if(key==="missile_poison"&&G.fusionCd<=0){
+    for(let i=0;i<3;i++)spawnFusionProjectile("plaguemissile",rand(0,Math.PI*2),{type:"missile",speed:185,r:6,life:3.1,damage:27,pierce:1,homing:true,glow:"#83d86d"});
+    G.fusionCd=1.5;
+  }else if(key==="orbit_poison"&&G.fusionCd<=0){
+    const n=5,rad=75;
+    for(let i=0;i<n;i++){
+      const a=G.player.orbitAngle+i*Math.PI*2/n,x=p.x+Math.cos(a)*rad,y=p.y+Math.sin(a)*rad;
+      fusionExplosion(x,y,28,11,"#8ad96f");
+    }
+    G.fusionCd=.9;
+  }
 }
 function fireWeapons(dt){
   const p=G.player;
@@ -1938,6 +2284,7 @@ function fireWeapons(dt){
       const rad=(58+wp.lvl*10)*(wp.evo?1.35:1)*wp.size;
       for(const e of G.enemies)if(!e.dead && Math.hypot(e.x-p.x,e.y-p.y)<rad+e.r){
         const h=hitRoll((6+wp.lvl*3)*(wp.evo?1.65:1),wp);damageEnemy(e,h.dmg,h.crit);
+        if(G.fusion&&fusionHas("poison"))e.fusionPoisonUntil=Math.max(e.fusionPoisonUntil||0,G.time+2.2);
       }
       p.poisonTick=(.43)*(wp.evo?.6:1)*wp.haste;
     }
@@ -1946,32 +2293,42 @@ function fireWeapons(dt){
 function updateProjectiles(dt){
   for(const pr of G.projectiles){
     pr.life-=dt;if(pr.age!=null)pr.age+=dt;
-    if(pr.homing){
-      const t=nearestEnemy(pr.x,pr.y,300);
+    processFusionProjectile(pr,dt);
+
+    if(pr.homing && !(pr.fusionReturning&&pr.age>1.0)){
+      const t=nearestEnemy(pr.x,pr.y,320);
       if(t){
         const sp=Math.hypot(pr.vx,pr.vy),ta=Math.atan2(t.y-pr.y,t.x-pr.x),ca=Math.atan2(pr.vy,pr.vx);
-        let da=((ta-ca+Math.PI*3)%(Math.PI*2))-Math.PI,na=ca+da*Math.min(1,dt*4);
+        let da=((ta-ca+Math.PI*3)%(Math.PI*2))-Math.PI,na=ca+da*Math.min(1,dt*(pr.fusionKind?5.2:4));
         pr.vx=Math.cos(na)*Math.max(sp,190);pr.vy=Math.sin(na)*Math.max(sp,190);
       }
     }
-    if(pr.type==="boom" && pr.age>1.0){
+    if(pr.type==="boom" && pr.age>1.0 && !pr.fusionReturning){
       const a=Math.atan2(G.player.y-pr.y,G.player.x-pr.x),sp=290;
       pr.vx=lerp(pr.vx,Math.cos(a)*sp,dt*4);pr.vy=lerp(pr.vy,Math.sin(a)*sp,dt*4);
     }
-    if(pr.type==="axe"){pr.spin=(pr.spin||0)+dt*9;pr.vy+=24*dt}
+    if(pr.type==="axe"){pr.spin=(pr.spin||0)+dt*9;pr.vy+=pr.fusionKind?9*dt:24*dt}
     pr.x+=pr.vx*dt;pr.y+=pr.vy*dt;
+
     for(const e of G.enemies){
       if(e.dead)continue;
       if(Math.hypot(pr.x-e.x,pr.y-e.y)<pr.r+e.r){
         if(pr.type==="boom" && pr.hitSet?.has(e))continue;
         if(pr.type==="boom")pr.hitSet.add(e);
         const crit=Math.random()<pr.crit,dm=pr.damage*(crit?1.85:1);
-        damageEnemy(e,dm,crit);particle(pr.x,pr.y,pr.type==="fire"?"#ff9b45":"#9feaff",2);
+        damageEnemy(e,dm,crit);
+        onFusionProjectileHit(pr,e);
+        particle(pr.x,pr.y,pr.glow||(pr.type==="fire"?"#ff9b45":"#9feaff"),pr.fusionKind?4:2);
         if(pr.pierce>0)pr.pierce--; else if(pr.type!=="boom"){pr.life=-1;break}
       }
     }
+
+    if(pr.fusionReturning&&pr.age>1.15&&Math.hypot(pr.x-G.player.x,pr.y-G.player.y)<18){
+      if(pr.fusionKind==="plaguereaper")fusionExplosion(G.player.x,G.player.y,115,24,"#90d85e");
+      pr.life=-1;
+    }
   }
-  G.projectiles=G.projectiles.filter(p=>p.life>0&&p.x>-80&&p.x<W+80&&p.y>-80&&p.y<H+80);
+  G.projectiles=G.projectiles.filter(p=>p.life>0&&p.x>-100&&p.x<W+100&&p.y>-100&&p.y<H+100);
 }
 function orbitHits(dt){
   if(!G.player.weapons.orbit)return;
@@ -2004,6 +2361,23 @@ function updateEnemies(dt){
       if(dealPlayerDamage(e.dmg,e))e.hitCd=.7;
     }
   }
+
+  // Elite aura: still empowers nearby enemies, and now visibly drains the player inside it.
+  const auraCount=G.enemies.filter(e=>!e.dead&&e.type==="elite"&&e.eliteMods?.includes("aura")&&Math.hypot(e.x-p.x,e.y-p.y)<125).length;
+  if(auraCount>0&&G.running){
+    const baseRate=G.time<480?2.4:G.time<720?3.8:5.5;
+    const rate=baseRate*Math.min(2,auraCount);
+    p.hp-=rate*dt;
+    G.noHitTime=0;
+    G.dominance=Math.max(0,G.dominance-dt*6);
+    G.auraTextCd=Math.max(0,(G.auraTextCd||0)-dt);
+    if(G.auraTextCd<=0){
+      addText(p.x,p.y-22,"AURA -"+Math.round(rate)+"/s","#7ff0a1",13);
+      G.auraTextCd=.8;
+    }
+    if(p.hp<=0){p.hp=0;endGame(false)}
+  }else G.auraTextCd=0;
+
   G.enemies=G.enemies.filter(e=>!e.dead);
 }
 function updateGems(dt){
@@ -2079,7 +2453,14 @@ function updateSpawns(dt){
   const d=difficulty(),dir=directorModifiers(),ev=eventModifiers();
   G.spawnAcc+=dt;
 
-  // Special pure-elite / pure-boss events replace the normal spawning system temporarily.
+  const lateStage=G.time>=900?2:G.time>=720?1:0;
+  if(lateStage!==G.lateStage){
+    G.lateStage=lateStage;G.spawnAcc=0;G.eliteAcc=0;
+    if(lateStage===1)showToast("☠ ERA ÉLITE · SOLO ÉLITES ☠","#d997ff",2200);
+    if(lateStage===2)showToast("☠ APOCALIPSIS · SOLO JEFES ☠","#ffd15c",2600);
+  }
+
+  // Special pure-elite / pure-boss events temporarily replace normal spawning.
   if(ev.mode==="elite"||ev.mode==="boss"){
     G.eventSpawnAcc+=dt;
     const activeSpecial=G.enemies.filter(e=>!e.dead&&(ev.mode==="elite"?e.type==="elite":e.type==="boss")).length;
@@ -2094,16 +2475,48 @@ function updateSpawns(dt){
     return;
   }
 
-  // Quantity is the director's primary lever, with event modifiers layered on top.
+  // 15+ minutes: normal enemies are gone. The game becomes a boss-build stress test.
+  if(G.time>=900){
+    const activeBosses=G.enemies.filter(e=>!e.dead&&e.type==="boss").length;
+    const elapsed=G.time-900;
+    const interval=Math.max(4.2,8.5-elapsed/150)/(Math.max(1,ev.spawn)*Math.max(1,dir.spawn*.8));
+    const cap=Math.min(8,3+Math.floor(elapsed/150));
+    if(G.spawnAcc>=interval&&activeBosses<cap){
+      G.spawnAcc=0;spawnBoss(Math.floor(G.time/60));
+    }
+    return;
+  }
+
+  // 12–15 minutes: only elites spawn, plus occasional scheduled bosses.
+  if(G.time>=720){
+    const activeElites=G.enemies.filter(e=>!e.dead&&e.type==="elite").length;
+    const elapsed=G.time-720;
+    const interval=Math.max(.85,1.85-elapsed/420)/(Math.max(1,ev.spawn)*Math.max(1,dir.spawn*.75));
+    const cap=Math.min(24,14+Math.floor(elapsed/45));
+    while(G.spawnAcc>=interval&&G.enemies.filter(e=>!e.dead&&e.type==="elite").length<cap){
+      G.spawnAcc-=interval;spawnEnemy("elite");
+      if(G.spawnAcc<interval)break;
+    }
+    if(G.time>=G.nextEndlessBoss){
+      spawnBoss(Math.floor(G.time/60));
+      G.nextEndlessBoss=G.time+Math.max(38,58-elapsed/20);
+    }
+    return;
+  }
+
+  // Before 12 minutes, quantity remains the main pressure lever.
   let interval=Math.max(.09,.66/d)/(dir.spawn*ev.spawn);
   while(G.spawnAcc>interval){G.spawnAcc-=interval;spawnEnemy()}
 
   G.eliteAcc+=dt;
-  const eliteInterval=Math.max(6.5,26-d*1.75)/dir.elite;
+  let eliteInterval=Math.max(6.5,26-d*1.75)/dir.elite;
+  if(G.time>=600)eliteInterval*=.48;
+  else if(G.time>=540)eliteInterval*=.60;
+  else if(G.time>=480)eliteInterval*=.75;
   if(G.eliteAcc>eliteInterval){
     G.eliteAcc=0;
-    let eliteWave=G.time>=720?2:1;
-    if(dir.level===3 && G.time>=480 && Math.random()<.28)eliteWave++;
+    let eliteWave=G.time>=600?2:1;
+    if(dir.level===3 && G.time>=480 && Math.random()<.35)eliteWave++;
     for(let i=0;i<eliteWave;i++)spawnElite();
     showToast(eliteWave>1?"ÉLITES":"ÉLITE","#d997ff",500);
   }
@@ -2126,6 +2539,7 @@ function update(dt){
   const p=G.player;
   G.time+=dt;G.score+=dt*2;p.invuln=Math.max(0,p.invuln-dt);
   G.noHitTime+=dt;G.progressSaveAcc+=dt;
+  G.projectileSoundCd=Math.max(0,(G.projectileSoundCd||0)-dt);
   updateRandomEvents(dt);
   updateDirector(dt);
   if(G.progressSaveAcc>=5){G.progressSaveAcc=0;syncCharacterProgress(true,false)}
@@ -2135,10 +2549,10 @@ function update(dt){
   if(dx||dy){
     const l=Math.hypot(dx,dy);dx/=l;dy/=l;p.moveX=dx;p.moveY=dy;
     const sp=playerMoveSpeed();
-    p.x=clamp(p.x+dx*sp*dt,18,W-18);p.y=clamp(p.y+dy*sp*dt,18,H-105);
+    p.x=clamp(p.x+dx*sp*dt,18,W-18);p.y=clamp(p.y+dy*sp*dt,18,H-34);
     if(Math.abs(dx)>Math.abs(dy))p.dir=dx>0?"right":"left";else p.dir=dy>0?"down":"up";
   }else{p.moveX=0;p.moveY=0}
-  fireWeapons(dt);updateProjectiles(dt);orbitHits(dt);updateEnemies(dt);updateEnemyProjectiles(dt);updateHazards(dt);updateSpawnWarnings(dt);updateGems(dt);updateThreatDirector(dt);updateFormations(dt);updateSpawns(dt);
+  fireWeapons(dt);updateFusion(dt);updateProjectiles(dt);orbitHits(dt);updateFusionZones(dt);updateEnemies(dt);updateEnemyProjectiles(dt);updateHazards(dt);updateSpawnWarnings(dt);updateGems(dt);updateThreatDirector(dt);updateFormations(dt);updateSpawns(dt);
   for(const ef of G.effects)ef.life-=dt;G.effects=G.effects.filter(e=>e.life>0);
   for(const t of G.texts){t.life-=dt;t.y+=t.vy*dt}G.texts=G.texts.filter(t=>t.life>0);
   for(const q of G.particles){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.96;q.vy*=.96}G.particles=G.particles.filter(q=>q.life>0);
@@ -2158,6 +2572,7 @@ function draw(){
   let sx=G?.shake?rand(-G.shake,G.shake):0,sy=G?.shake?rand(-G.shake,G.shake):0;ctx.translate(sx,sy);
   drawGround();
   drawTacticalWarnings();
+  drawFusionZones();
   drawGems();
   drawPoisonAura();
   drawEffects();
@@ -2258,7 +2673,7 @@ function drawGround(){
   brazier(170,H-112,0);brazier(W-178,116,1.7);
 
   // Darkened HUD-safe strip.
-  ctx.fillStyle="rgba(5,7,15,.30)";ctx.fillRect(0,H-105,W,105);
+  ctx.fillStyle="rgba(5,7,15,.30)";ctx.fillRect(0,H-31,W,31);
 }
 function drawGems(){
   for(const g of G.gems){
@@ -2280,23 +2695,36 @@ function drawEffects(){
       ctx.strokeStyle=e.color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(e.x1,e.y1);
       const mx=(e.x1+e.x2)/2+rand(-8,8),my=(e.y1+e.y2)/2+rand(-8,8);
       ctx.lineTo(mx,my);ctx.lineTo(e.x2,e.y2);ctx.stroke();
+    }else if(e.type==="fusionNova"||e.type==="fusionRing"){
+      const t=1-e.life/Math.max(.001,e.maxLife||.3),rr=e.type==="fusionNova"?e.r*(.25+.75*t):e.r*(.70+.30*t);
+      ctx.save();
+      ctx.globalAlpha=(1-t)*.50;ctx.strokeStyle=e.color;ctx.lineWidth=e.type==="fusionNova"?5:4;
+      ctx.beginPath();ctx.arc(e.x,e.y,rr,0,Math.PI*2);ctx.stroke();
+      if(e.type==="fusionNova"){
+        ctx.globalAlpha=(1-t)*.12;ctx.fillStyle=e.color;ctx.beginPath();ctx.arc(e.x,e.y,rr,0,Math.PI*2);ctx.fill();
+      }
+      ctx.restore();
     }
   }
 }
 function drawProjectiles(){
   for(const p of G.projectiles){
     ctx.save();ctx.translate(Math.round(p.x),Math.round(p.y));
-    if(p.type==="fire"){
-      ctx.fillStyle="#ff6b35";ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
-      ctx.fillStyle="#ffd45a";ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
-    }else if(p.type==="missile"){
-      ctx.rotate(Math.atan2(p.vy,p.vx));ctx.fillStyle="#b7a0ff";ctx.fillRect(-6,-3,12,6);ctx.fillStyle="#fff";ctx.fillRect(2,-1,5,2);
-    }else if(p.type==="axe"){
-      ctx.rotate(p.spin||0);ctx.fillStyle="#d7dbe9";ctx.fillRect(-8,-2,16,4);ctx.fillStyle="#75533d";ctx.fillRect(-2,-8,4,16);
-    }else if(p.type==="boom"){
-      ctx.strokeStyle="#ffcf57";ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*1.55);ctx.stroke();
+    if(p.fusionKind){
+      ctx.globalAlpha=.18;ctx.fillStyle=p.glow||"#ffe57b";ctx.beginPath();ctx.arc(0,0,p.r+7,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=1;ctx.shadowColor=p.glow||"#ffe57b";ctx.shadowBlur=10;
     }
-    ctx.restore();
+    if(p.type==="fire"){
+      ctx.fillStyle=p.fusionKind?(p.glow||"#ffd45a"):"#ff6b35";ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
+      ctx.fillStyle="#fff0a0";ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
+    }else if(p.type==="missile"){
+      ctx.rotate(Math.atan2(p.vy,p.vx));ctx.fillStyle=p.fusionKind?(p.glow||"#d0b5ff"):"#b7a0ff";ctx.fillRect(-7,-3,14,6);ctx.fillStyle="#fff";ctx.fillRect(2,-1,6,2);
+    }else if(p.type==="axe"){
+      ctx.rotate(p.spin||0);ctx.fillStyle=p.fusionKind?(p.glow||"#f0e5bf"):"#d7dbe9";ctx.fillRect(-9,-2,18,4);ctx.fillStyle=p.fusionKind?"#fff1a3":"#75533d";ctx.fillRect(-2,-9,4,18);
+    }else if(p.type==="boom"){
+      ctx.strokeStyle=p.fusionKind?(p.glow||"#ffe26e"):"#ffcf57";ctx.lineWidth=p.fusionKind?6:4;ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*1.55);ctx.stroke();
+    }
+    ctx.shadowBlur=0;ctx.restore();
   }
 }
 function drawEnemyPixel(e){
@@ -2360,6 +2788,16 @@ function drawEnemyPixel(e){
   ctx.restore();
 }
 function drawEnemies(){
+  // Aura zones are shown in world space so the player can immediately read the drain radius.
+  for(const e of G.enemies){
+    if(!e.dead&&e.type==="elite"&&e.eliteMods?.includes("aura")){
+      ctx.save();
+      const pulse=.10+.025*Math.sin(G.time*5);
+      ctx.globalAlpha=pulse;ctx.fillStyle="#69e493";ctx.beginPath();ctx.arc(e.x,e.y,125,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=.48;ctx.strokeStyle="#7ff0a1";ctx.lineWidth=2;ctx.beginPath();ctx.arc(e.x,e.y,125,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    }
+  }
   // Aim/charge lines are deliberately readable so difficulty comes from decisions, not surprise damage.
   for(const e of G.enemies){
     if(e.dead)continue;
@@ -2478,7 +2916,7 @@ function drawTexts(){ctx.textAlign="center";for(const t of G.texts){ctx.globalAl
 function updateHUD(){
   if(!G)return;
   $("timer").textContent=fmtTime(G.time);
-  $("stage").textContent=G.time<480?"JEFE FINAL: "+fmtTime(480-G.time):"MODO INFINITO";
+  $("stage").textContent=G.time<480?"JEFE FINAL: "+fmtTime(480-G.time):G.time<600?"ESCALADA":G.time<720?"SIN ENEMIGOS BÁSICOS":G.time<900?"SOLO ÉLITES":"SOLO JEFES";
   $("score").textContent=Math.floor(G.score).toLocaleString();
   $("level").textContent=G.level;$("streak").textContent=G.correctStreak;
   $("hpText").textContent=Math.ceil(G.player.hp)+"/"+G.player.maxHp;
@@ -2518,34 +2956,78 @@ function showToast(text,color="#fff",ms=900){
 }
 function renderWeaponList(){
   if(!G)return;
-  const weaponShort={
-    fire:"Fuego",orbit:"Cuchillas",chain:"Rayo",missile:"Misiles",
-    axe:"Hacha",poison:"Veneno",boom:"Búmeran"
-  };
-  const passiveShort={
-    might:"Poder",haste:"Rapidez",speed:"Velocidad",vitality:"Vida",
-    magnet:"Imán",crit:"Crítico",size:"Tamaño"
-  };
-
   let arr=[];
+  const hidden=new Set(G.fusion?[G.fusion.a,G.fusion.b]:[]);
+  if(G.fusion){
+    const f=FUSIONS[G.fusion.key];
+    arr.push(`<div class="slot" style="border-color:${f.color};box-shadow:0 0 7px ${f.color}66" title="FUSIÓN: ${f.name} · ${f.desc}">${f.icon}<span class="skillCount">F</span></div>`);
+  }
   for(const [id,w] of Object.entries(G.player.weapons)){
+    if(hidden.has(id))continue;
     const d=WEAPON_DEFS[id];
-    const qIndex=RARITIES.reduce((best,r,i)=>Math.abs(r.mult-(w.quality||1))<Math.abs(RARITIES[best].mult-(w.quality||1))?i:best,0);
-    const q=RARITIES[qIndex];
-    const label=w.evolved?d.evo:(weaponShort[id]||d.name);
-    arr.push(`<div class="slot" title="${d.name}${w.evolved?` → ${d.evo}`:""}">${d.icon} ${label} ${w.evolved?"★":`Nv.${w.level}`}${w.level===1&&!w.evolved?` · ${q.name}`:""}</div>`);
+    arr.push(`<div class="slot" title="${d.name}${w.evolved?` → ${d.evo}`:""}">${d.icon}<span class="skillCount">${w.evolved?"★":"x"+w.level}</span></div>`);
   }
   for(const [id,lvl] of Object.entries(G.player.passives)){
     const d=PASSIVE_DEFS[id];
-    arr.push(`<div class="slot" style="border-left-color:#b9a358" title="${d.name}: ${d.desc}">${d.icon} ${passiveShort[id]||d.name} ${lvl}/${d.max}</div>`);
+    arr.push(`<div class="slot" title="${d.name}: ${d.desc}">${d.icon}<span class="skillCount">x${lvl}</span></div>`);
   }
-
   const en=G.player.endless||{};
   const totalAsc=Object.values(en).reduce((a,b)=>a+b,0);
-  if(totalAsc>0)arr.push(`<div class="slot" style="border-left-color:#d38cff" title="Mejoras obtenidas después de completar la build">✦ Ascensión ${totalAsc}</div>`);
+  if(totalAsc>0)arr.push(`<div class="slot" style="border-color:#b56ee0" title="Mejoras de estadísticas después de completar la build">✦<span class="skillCount">x${totalAsc}</span></div>`);
   $("weapons").innerHTML=arr.join("");
 }
 
+
+
+const FUSIONS={
+  "axe_boom":{name:"Ciclón de Acero",icon:"🪓◒",color:"#f2c468",desc:"Grandes hachas búmeran barren la arena, cruzándose al regresar."},
+  "axe_chain":{name:"Hachas de Trueno",icon:"🪓⚡",color:"#f4df69",desc:"Cada impacto de hacha descarga rayos hacia enemigos cercanos."},
+  "axe_fire":{name:"Hachas del Infierno",icon:"🪓🔥",color:"#ff8d49",desc:"Hachas incendiarias dejan fuego y explotan al golpear."},
+  "axe_missile":{name:"Arsenal Arcano",icon:"🪓◆",color:"#b6a1ff",desc:"Hachas mágicas buscan objetivos como misiles y atraviesan grupos."},
+  "axe_orbit":{name:"Molino de Guerra",icon:"🪓✦",color:"#d9d9ef",desc:"Oleadas de cuchillas y hachas giratorias salen en todas direcciones."},
+  "axe_poison":{name:"Verdugo Tóxico",icon:"🪓☣",color:"#91df68",desc:"Las hachas infectan; enemigos debilitados pueden ser ejecutados."},
+  "boom_chain":{name:"Disco Tesla",icon:"◒⚡",color:"#78ddff",desc:"Cada golpe del búmeran convierte el disco en un conductor de rayos."},
+  "boom_fire":{name:"Eclipse Ígneo",icon:"◒🔥",color:"#ff9a50",desc:"Un enorme disco ardiente explota al atravesar enemigos y regresar."},
+  "boom_missile":{name:"Cazadores Retornantes",icon:"◒◆",color:"#a8bbff",desc:"Discos buscadores persiguen enemigos y luego vuelven al jugador."},
+  "boom_orbit":{name:"Órbita Infinita",icon:"◒✦",color:"#d3b6ff",desc:"Los discos nacen desde la órbita, barren la arena y regresan."},
+  "boom_poison":{name:"Segador de Plaga",icon:"◒☣",color:"#90d85e",desc:"El disco deja una ruta venenosa que estalla cuando vuelve."},
+  "chain_fire":{name:"Tormenta de Plasma",icon:"⚡🔥",color:"#ffd35f",desc:"Rayos sobrecargados provocan explosiones de plasma entre la horda."},
+  "chain_missile":{name:"Enjambre Tesla",icon:"⚡◆",color:"#7edcff",desc:"Los misiles generan cadenas de rayos al impactar."},
+  "chain_orbit":{name:"Halo de Tormenta",icon:"⚡✦",color:"#a8efff",desc:"Las cuchillas forman una jaula eléctrica alrededor del jugador."},
+  "chain_poison":{name:"Tormenta Tóxica",icon:"⚡☣",color:"#8ee987",desc:"El veneno carga a los enemigos y la electricidad salta entre ellos."},
+  "fire_missile":{name:"Cometas Arcanos",icon:"🔥◆",color:"#ffad62",desc:"Cometas buscadores explotan y dispersan fuego al impactar."},
+  "fire_orbit":{name:"Corona Solar",icon:"🔥✦",color:"#ffd36a",desc:"Cuchillas solares salen disparadas de la corona y explotan al golpear."},
+  "fire_poison":{name:"Combustión Tóxica",icon:"🔥☣",color:"#c7df58",desc:"El veneno acumulado se enciende en grandes detonaciones verdes."},
+  "missile_orbit":{name:"Satélites Arcanos",icon:"◆✦",color:"#b99cff",desc:"Las cuchillas se desprenden como satélites buscadores y se regeneran."},
+  "missile_poison":{name:"Enjambre de Plaga",icon:"◆☣",color:"#83d86d",desc:"Los misiles crean nubes venenosas persistentes al impactar."},
+  "orbit_poison":{name:"Corona Pestilente",icon:"✦☣",color:"#8ad96f",desc:"La corona libera pulsos tóxicos desde cada cuchilla orbitante."}
+};
+function fusionPairKey(a,b){return [a,b].sort().join("_")}
+function eligibleFusionPairs(){
+  if(!G||G.fusionUsed)return [];
+  const evolved=Object.entries(G.player.weapons).filter(([id,w])=>w.evolved).map(([id])=>id);
+  const out=[];
+  for(let i=0;i<evolved.length;i++)for(let j=i+1;j<evolved.length;j++){
+    const key=fusionPairKey(evolved[i],evolved[j]),f=FUSIONS[key];
+    if(f)out.push({kind:"fusion",id:key,a:evolved[i],b:evolved[j],weight:1});
+  }
+  return out;
+}
+function fusionHas(id){return !!G?.fusion&&(G.fusion.a===id||G.fusion.b===id)}
+function fusionPower(){
+  if(!G?.fusion)return {might:1,size:1,over:1};
+  const a=weaponPower(G.fusion.a),b=weaponPower(G.fusion.b);
+  return {might:((a?.might||1)+(b?.might||1))/2,size:((a?.size||1)+(b?.size||1))/2,over:G.fusionOvercharge>0?1.45:1};
+}
+function activateFusion(c,perfect=false){
+  const f=FUSIONS[c.id];if(!f||G.fusionUsed)return;
+  G.fusionUsed=true;
+  G.fusion={key:c.id,a:c.a,b:c.b,name:f.name,icon:f.icon,color:f.color};
+  G.fusionCd=0;G.fusionAuxCd=0;G.fusionOvercharge=perfect?10:0;
+  sfx("fusion");G.shake=18;
+  particle(G.player.x,G.player.y,f.color,34);
+  showToast("✦ FUSIÓN · "+f.name.toUpperCase()+" ✦",f.color,2600);
+}
 
 const ENDLESS_UPGRADES={
   fury:{name:"Furia",icon:"✹",desc:"+4% daño para esta partida."},
@@ -2601,12 +3083,14 @@ function weightedDistinct(pool,n=3){
   return out;
 }
 function cardInfo(base,chest=false){
-  let ri=rollRarity(chest);
+  let ri=base.kind==="fusion"?4:rollRarity(chest);
   if(base.kind==="evolution")ri=Math.max(ri,3);
   const rarity=RARITIES[ri],d=base.kind==="passive"?PASSIVE_DEFS[base.id]:
-    base.kind==="endless"?ENDLESS_UPGRADES[base.id]:WEAPON_DEFS[base.id];
+    base.kind==="endless"?ENDLESS_UPGRADES[base.id]:
+    base.kind==="fusion"?FUSIONS[base.id]:WEAPON_DEFS[base.id];
   let title,desc;
-  if(base.kind==="evolution"){title=d.evo;desc=`EVOLUCIÓN: transforma ${d.name} en una versión mucho más poderosa.`}
+  if(base.kind==="fusion"){title=d.name;desc=d.desc}
+  else if(base.kind==="evolution"){title=d.evo;desc=`EVOLUCIÓN: transforma ${d.name} en una versión mucho más poderosa.`}
   else if(base.kind==="weapon"){
     const owned=G.player.weapons[base.id];
     title=d.name;desc=owned?`Mejora el arma de Nv.${owned.level} a Nv.${Math.min(5,owned.level+1)}.`:`Desbloquea esta nueva arma. ${d.desc}`;
@@ -2621,18 +3105,38 @@ function cardInfo(base,chest=false){
 function openReward(chest=false){
   if(!G?.running||G.modal)return;
   G.modal=true;G.rewardIsChest=chest;setMusicLevel(.05);
-  const pool=buildUpgradePool(chest);
+
+  const fusionPool=!chest?eligibleFusionPairs():[];
+  const isFusion=fusionPool.length>0;
+  const pool=isFusion?fusionPool:buildUpgradePool(chest);
   if(!pool.length){G.modal=false;return}
-  const cards=weightedDistinct(pool,3).map(x=>cardInfo(x,chest));
+  const cards=(isFusion?pool:weightedDistinct(pool,3)).map(x=>cardInfo(x,chest));
   G.pendingReward=cards;
-  const isAscension=cards.length>0&&cards.every(c=>c.kind==="endless");
-  $("upgradeTitle").textContent=chest?"COFRE DEL JEFE":isAscension?"ASCENSIÓN":"ELIGE UNA MEJORA";
-  $("upgradeSub").textContent=chest?"El cofre tiene mejores probabilidades de recompensas raras.":isAscension?"Tu build está completa. Sigue aumentando tu poder.":"Primero elige lo que quieres. Después tendrás que ganarte su versión potenciada.";
-  $("cards").innerHTML="";
+
+  const isAscension=!isFusion&&cards.length>0&&cards.every(c=>c.kind==="endless");
+  $("upgradeTitle").textContent=isFusion?"✦ FUSIÓN DISPONIBLE ✦":chest?"COFRE DEL JEFE":isAscension?"ELIGE UNA ESTADÍSTICA":"ELIGE UNA MEJORA";
+  $("upgradeSub").textContent=isFusion
+    ?"Dos armas evolucionadas pueden convertirse en una sola técnica mucho más poderosa. Solo puedes fusionar una vez por partida."
+    :chest?"El cofre tiene mejores probabilidades de recompensas raras."
+    :isAscension?"Tu build de habilidades está completa. Las estadísticas siempre aparecen en los mismos tres espacios."
+    :"Primero elige lo que quieres. Después tendrás que ganarte su versión potenciada.";
+
+  const cardsEl=$("cards");cardsEl.innerHTML="";
+  cardsEl.classList.toggle("statMode",isAscension);
+  cardsEl.classList.toggle("fusionMode",isFusion);
+
   cards.forEach((c,i)=>{
-    const b=document.createElement("button");b.className=`card r-${c.rarity.id}`;
-    b.innerHTML=`<span class="rarity">${c.rarity.name}</span><h3>${c.icon} ${c.title}</h3><p>${c.desc}</p>`;
-    b.onclick=()=>selectCard(i);$("cards").appendChild(b);
+    const b=document.createElement("button");b.className=`card ${isFusion?"fusionCard":"r-"+c.rarity.id}`;
+    if(isFusion){
+      const f=FUSIONS[c.id];
+      b.innerHTML=`<span class="fusionTag">FUSIÓN</span><div class="fusionIcon">${f.icon}</div><h3>${f.name}</h3><div class="fusionParts">${WEAPON_DEFS[c.a].evo} + ${WEAPON_DEFS[c.b].evo}</div><p>${f.desc}</p>`;
+    }else if(isAscension){
+      const current=G.player.endless?.[c.id]||0;
+      b.innerHTML=`<span class="statCount">x${current}</span><div class="statIcon">${c.icon}</div><h3>${c.title}</h3><p>${c.desc}</p>`;
+    }else{
+      b.innerHTML=`<span class="rarity">${c.rarity.name}</span><h3>${c.icon} ${c.title}</h3><p>${c.desc}</p>`;
+    }
+    b.onclick=()=>selectCard(i);cardsEl.appendChild(b);
   });
   overlays.upgrade.classList.remove("hidden");
 }
@@ -2679,11 +3183,16 @@ function answerQuestion(correct,btn,answers){
 }
 function finishReward(correct,jackpot){
   let c={...G.pendingCard};
-  if(correct)c.rarityIndex=Math.min(4,c.rarityIndex+1);
-  if(jackpot){
-    c.rarityIndex=Math.min(4,c.rarityIndex+1);
-    if(Math.random()<.5)c.bonusLevel=true;
-    sfx("jackpot");showToast("★ JACKPOT ★","#ffe36f",1500);G.shake=10;
+  if(c.kind==="fusion"){
+    c.rarityIndex=4;c.fusionPerfect=correct;
+    if(jackpot){c.fusionPerfect=true;c.fusionJackpot=true}
+  }else{
+    if(correct)c.rarityIndex=Math.min(4,c.rarityIndex+1);
+    if(jackpot){
+      c.rarityIndex=Math.min(4,c.rarityIndex+1);
+      if(Math.random()<.5)c.bonusLevel=true;
+      sfx("jackpot");showToast("★ JACKPOT ★","#ffe36f",1500);G.shake=10;
+    }
   }
   c.rarity=RARITIES[c.rarityIndex];
   applyUpgrade(c);
@@ -2694,6 +3203,14 @@ function finishReward(correct,jackpot){
 }
 function applyUpgrade(c){
   const power=c.rarity.mult;
+  if(c.kind==="fusion"){
+    activateFusion(c,!!c.fusionPerfect);
+    if(c.fusionPerfect){
+      G.fusionOvercharge=c.fusionJackpot?15:10;
+      showToast(c.fusionJackpot?"★ FUSIÓN PERFECTA · 15s ★":"FUSIÓN PERFECTA · SOBRECARGA 10s",FUSIONS[c.id].color,c.fusionJackpot?2000:1600);
+    }
+    return;
+  }
   if(c.kind==="endless"){
     G.player.endless ||= {fury:0,tempo:0,guard:0,stride:0,reach:0,edge:0,swell:0};
     const steps=1+(c.bonusLevel?1:0);
@@ -2767,7 +3284,7 @@ function endGame(manual=false){
     <div class="stat"><b>${G.kills}</b><span>Derrotados</span></div>
     <div class="stat"><b>${G.correct}/${G.questions}</b><span>Preguntas</span></div>
     <div class="stat"><b>${G.level}</b><span>Nivel</span></div>
-    <div class="stat"><b>${G.correctStreak}</b><span>Racha final</span></div>`;
+    <div class="stat"><b>${G.fusion?G.fusion.name:"—"}</b><span>Fusión</span></div>`;
   const pct=Math.min(100,save.totalScore/40000*100);
   $("masteryProgress").innerHTML=save.mastery
     ? `<div id="masteryBadge">★ MAESTRÍA DESBLOQUEADA ★</div>`
