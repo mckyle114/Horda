@@ -1,3 +1,4 @@
+<!-- CHROMEBOOK PERFORMANCE PASS v6.9: cached ground, bounded visuals/gems, cheaper enemy rendering -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -807,12 +808,9 @@ function drawEnemySpriteAsset(e,hurt=false){
   const [dw0,dh0]=s.size;
   const dw=e.type==="giga"?dw0*1.24:dw0,dh=e.type==="giga"?dh0*1.24:dh0;
   ctx.save();
-  ctx.filter="brightness(1.09) saturate(1.04)";
-  if(hurt){ctx.globalAlpha=.72;ctx.shadowColor="#fff";ctx.shadowBlur=9}
-  else{
-    ctx.shadowColor=(e.type==="boss"||e.type==="giga")?"rgba(255,165,95,.42)":"rgba(175,210,255,.28)";
-    ctx.shadowBlur=(e.type==="boss"||e.type==="giga")?5:2;
-  }
+  if(hurt){ctx.globalAlpha=.72;ctx.shadowColor="#fff";ctx.shadowBlur=7}
+  else if(e.type==="boss"||e.type==="giga"){ctx.filter="brightness(1.07) saturate(1.03)";ctx.shadowColor="rgba(255,165,95,.38)";ctx.shadowBlur=4}
+  else if(e.type==="elite"){ctx.filter="brightness(1.04)";ctx.shadowColor="rgba(200,150,255,.28)";ctx.shadowBlur=2}
   if(flip){ctx.scale(-1,1);ctx.drawImage(s.img,frame*cell,row*cell,cell,cell,-dw/2,-dh*.64,dw,dh)}
   else ctx.drawImage(s.img,frame*cell,row*cell,cell,cell,-dw/2,-dh*.64,dw,dh);
   ctx.restore();return true;
@@ -1876,9 +1874,9 @@ function moveEnemyAway(e,tx,ty,speed,dt){
 }
 function enemyHasteAura(e){
   if(e.type==="elite")return 1;
-  for(const a of G.enemies){
-    if(a===e||a.dead||a.type!=="elite"||!a.eliteMods?.includes("aura"))continue;
-    if(Math.hypot(a.x-e.x,a.y-e.y)<125)return 1.20;
+  const list=G._auraElites||[];
+  for(const a of list){
+    const dx=a.x-e.x,dy=a.y-e.y;if(dx*dx+dy*dy<15625)return 1.20;
   }
   return 1;
 }
@@ -2201,10 +2199,9 @@ function drawEnemyProjectiles(){
     ctx.globalAlpha=.16;ctx.fillStyle=red;ctx.beginPath();ctx.arc(0,0,(q.r+10)*pulse,0,Math.PI*2);ctx.fill();
     ctx.globalAlpha=.30;ctx.fillStyle=red2;ctx.beginPath();ctx.arc(0,0,(q.r+6)*pulse,0,Math.PI*2);ctx.fill();
     ctx.globalAlpha=.85;ctx.strokeStyle=red2;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,q.r+3,0,Math.PI*2);ctx.stroke();
-    ctx.globalAlpha=1;ctx.shadowColor=red;ctx.shadowBlur=18;
-    ctx.fillStyle=red;ctx.fillRect(-q.r,-q.r,q.r*2,q.r*2);
-    ctx.shadowBlur=10;ctx.fillStyle=hot;ctx.fillRect(-q.r*.55,-q.r*.55,q.r*1.1,q.r*1.1);
-    ctx.shadowBlur=0;ctx.fillStyle=core;ctx.fillRect(-2,-2,4,4);
+    ctx.globalAlpha=1;ctx.fillStyle=red;ctx.fillRect(-q.r,-q.r,q.r*2,q.r*2);
+    ctx.fillStyle=hot;ctx.fillRect(-q.r*.55,-q.r*.55,q.r*1.1,q.r*1.1);
+    ctx.fillStyle=core;ctx.fillRect(-2,-2,4,4);
     ctx.restore();
   }
 }
@@ -2307,6 +2304,12 @@ function spawnGigaBoss(){
 function spawnElite(){return spawnEnemy("elite")}
 
 function addGem(x,y,val){
+  // Preserve all XP while preventing hundreds of individual gem objects from accumulating.
+  if(G.gems.length>=180){
+    let best=null,bd=Infinity;
+    for(const g of G.gems){const dx=g.x-x,dy=g.y-y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=g}}
+    if(best){best.val+=val;best.r=best.val>=20?6:4;return}
+  }
   G.gems.push({x,y,val,r:val>=20?6:4,life:0});
 }
 function spawnHealthPickup(x,y){if(!G?.pickups)return;G.pickups.push({type:"health",x,y,life:18,bob:rand(0,Math.PI*2)})}
@@ -2322,9 +2325,12 @@ function updatePickups(dt){
   for(const r of G.rewardDrops)r.life-=dt;G.rewardDrops=G.rewardDrops.filter(r=>r.life>0);
 }
 function addText(x,y,text,color="#fff",size=13){
+  // Damage-number storms are expensive on school Chromebooks. Keep newest/important feedback only.
+  if(G.texts.length>=72){if(size<=12)return;G.texts.splice(0,Math.min(8,G.texts.length))}
   G.texts.push({x,y,text,color,size,life:1,vy:-25});
 }
 function particle(x,y,color,n=5){
+  const room=Math.max(0,180-G.particles.length);n=Math.min(n,room);
   for(let i=0;i<n;i++)G.particles.push({x,y,vx:rand(-70,70),vy:rand(-70,70),life:rand(.25,.6),color,size:rand(2,5)});
 }
 function damageEnemy(e,amount,crit=false){
@@ -2353,10 +2359,10 @@ function killEnemy(e){
   }
 }
 function nearestEnemy(x,y,range=9999,exclude=[]){
-  let best=null,bd=range;
+  let best=null,bd=range*range;const ex=exclude.length>3?new Set(exclude):null;
   for(const e of G.enemies){
-    if(e.dead||exclude.includes(e))continue;
-    const dd=Math.hypot(e.x-x,e.y-y);
+    if(e.dead||(ex?ex.has(e):exclude.includes(e)))continue;
+    const dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;
     if(dd<bd){bd=dd;best=e}
   }
   return best;
@@ -2732,7 +2738,7 @@ function updateProjectiles(dt){
 
     for(const e of G.enemies){
       if(e.dead)continue;
-      if(Math.hypot(pr.x-e.x,pr.y-e.y)<pr.r+e.r){
+      {const dx=pr.x-e.x,dy=pr.y-e.y,rr=pr.r+e.r;if(dx*dx+dy*dy<rr*rr){
         if(pr.type==="boom" && pr.hitSet?.has(e))continue;
         if(pr.type==="boom")pr.hitSet.add(e);
         const crit=Math.random()<pr.crit,dm=pr.damage*(crit?1.85:1);
@@ -2741,7 +2747,7 @@ function updateProjectiles(dt){
         if(pr.fusionKind||crit)G.effects.push({type:"impactAsset",x:pr.x,y:pr.y,life:.20,maxLife:.20,size:pr.fusionKind?46:30});
         particle(pr.x,pr.y,pr.glow||(pr.type==="fire"?"#ff9b45":"#9feaff"),pr.fusionKind?4:2);
         if(pr.pierce>0)pr.pierce--; else if(pr.type!=="boom"){pr.life=-1;break}
-      }
+      }}
     }
 
     if(pr.fusionReturning&&pr.age>1.15&&Math.hypot(pr.x-G.player.x,pr.y-G.player.y)<18){
@@ -2767,6 +2773,7 @@ function orbitHits(dt){
 }
 function updateEnemies(dt){
   const p=G.player;
+  G._auraElites=G.enemies.filter(e=>!e.dead&&e.type==="elite"&&e.eliteMods?.includes("aura"));
   for(const e of G.enemies){
     if(e.dead)continue;
     e.hurt=Math.max(0,e.hurt-dt);e.hitCd=Math.max(0,e.hitCd-dt);e.orbitCd=Math.max(0,(e.orbitCd||0)-dt);
@@ -2778,13 +2785,13 @@ function updateEnemies(dt){
       if(!handled){const a=enemyHasteAura(e);moveEnemyToward(e,p.x,p.y,e.speed*a,dt)}
     }
 
-    if(Math.hypot(e.x-p.x,e.y-p.y)<e.r+p.r && e.hitCd<=0){
+    {const dx=e.x-p.x,dy=e.y-p.y,rr=e.r+p.r;if(dx*dx+dy*dy<rr*rr && e.hitCd<=0){
       if(dealPlayerDamage(e.dmg,e))e.hitCd=.7;
-    }
+    }}
   }
 
   // Elite aura: still empowers nearby enemies, and now visibly drains the player inside it.
-  const auraCount=G.enemies.filter(e=>!e.dead&&e.type==="elite"&&e.eliteMods?.includes("aura")&&Math.hypot(e.x-p.x,e.y-p.y)<125).length;
+  const auraCount=(G._auraElites||[]).filter(e=>{const dx=e.x-p.x,dy=e.y-p.y;return dx*dx+dy*dy<15625}).length;
   if(auraCount>0&&G.running){
     const baseRate=G.time<480?2.4:G.time<720?3.8:5.5;
     const rate=baseRate*Math.min(2,auraCount);
@@ -2805,7 +2812,8 @@ function updateGems(dt){
   const p=G.player,mag=88+(p.passives.magnet||0)*45*((p.passiveQuality||{}).magnet||1)+(p.heroMagnet||0)+(p.endless?.reach||0)*18+(G.shrineMagnet>0?170:0)+(G.overdriveTime>0?70:0);
   for(const g of G.gems){
     g.life+=dt;
-    let d=Math.hypot(g.x-p.x,g.y-p.y);
+    const dx=g.x-p.x,dy=g.y-p.y,d2=dx*dx+dy*dy,mag2=mag*mag;
+    let d=d2<mag2?Math.sqrt(d2):mag+1;
     if(d<mag){
       const a=Math.atan2(p.y-g.y,p.x-g.x),sp=160+(mag-d)*5;
       g.x+=Math.cos(a)*sp*dt;g.y+=Math.sin(a)*sp*dt;
@@ -2975,7 +2983,7 @@ function update(dt){
     if(Math.abs(dx)>Math.abs(dy))p.dir=dx>0?"right":"left";else p.dir=dy>0?"down":"up";
   }else{p.moveX=0;p.moveY=0}
   updateShrines(dt);fireWeapons(dt);updateFusion(dt);updateProjectiles(dt);orbitHits(dt);updateFusionZones(dt);updateEnemies(dt);updateEnemyProjectiles(dt);updateHazards(dt);updateSpawnWarnings(dt);updateGems(dt);updatePickups(dt);updateThreatDirector(dt);updateFormations(dt);updateSpawns(dt);
-  for(const ef of G.effects)ef.life-=dt;G.effects=G.effects.filter(e=>e.life>0);
+  for(const ef of G.effects)ef.life-=dt;G.effects=G.effects.filter(e=>e.life>0);if(G.effects.length>120)G.effects.splice(0,G.effects.length-120);
   for(const t of G.texts){t.life-=dt;t.y+=t.vy*dt}G.texts=G.texts.filter(t=>t.life>0);
   for(const q of G.particles){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.96;q.vy*=.96}G.particles=G.particles.filter(q=>q.life>0);
   G.shake=Math.max(0,G.shake-dt*22);
@@ -3016,7 +3024,9 @@ function tileHash(x,y){
   n=(n^(n>>13))*1274126177>>>0;
   return ((n^(n>>16))>>>0)/4294967295;
 }
+let groundCache=null;
 function drawGround(){
+  if(groundCache){ctx.drawImage(groundCache,0,0);return}
   // Ruined moonlit courtyard: varied stone slabs, moss, cracks, old runes and edge ruins.
   ctx.fillStyle="#0e1420";ctx.fillRect(-20,-20,W+40,H+40);
 
@@ -3065,6 +3075,12 @@ function drawGround(){
 
   // Darkened HUD-safe strip.
   ctx.fillStyle="rgba(5,7,15,.30)";ctx.fillRect(0,H-31,W,31);
+
+  // The arena is static. Cache the completed background once all floor/prop assets are ready.
+  if(!groundCache&&REFORGED_ASSETS.floor.ready&&REFORGED_ASSETS.items.ready){
+    groundCache=document.createElement("canvas");groundCache.width=W;groundCache.height=H;
+    groundCache.getContext("2d").drawImage(canvas,0,0,W,H);
+  }
 }
 function drawGems(){
   for(const g of G.gems){
@@ -3112,7 +3128,7 @@ function drawProjectiles(){
     const tier=p.fusionKind?4:weaponVisualTier(p.type),ang=Math.atan2(p.vy||0,p.vx||1);
     if(p.fusionKind)drawVfxCell(2,2,p.x-Math.cos(ang)*10,p.y-Math.sin(ang)*10,34,.28,ang);
     const glow=p.type==="fire"?"#ff7a38":p.type==="missile"?"#a98cff":p.type==="axe"?"#e4d48c":"#ffd45a";
-    ctx.save();ctx.shadowColor=glow;ctx.shadowBlur=p.fusionKind?9:6;
+    ctx.save();ctx.shadowColor=glow;ctx.shadowBlur=p.fusionKind?6:2;
     let ok=false;
     if(p.type==="fire")ok=drawWeaponAsset("fire",tier,0,p.x,p.y,Math.max(18,p.r*3.2),ang,.98);
     else if(p.type==="missile")ok=drawWeaponAsset("missile",tier,0,p.x,p.y,Math.max(20,p.r*5),ang,.98);
